@@ -1,26 +1,125 @@
 @import "tailwindcss";
 
+/* ── Tokens de diseño ─────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --surface-2: #f1f1ef;
+  --line: #e6e6e2;
+  --ink: #1d1d1b;
+  --muted: #6b6b66;
+  --accent: #4f46e5;
+  --accent-ink: #ffffff;
+  --accent-soft: #eef0ff;
+  --success: #15803d;
+  --success-soft: #e9f7ee;
+  --danger: #c2410c;
+  --danger-soft: #fdf0e8;
+  --warning: #a16207;
+  --warning-soft: #fdf7e3;
+  --tone-1: #dc2626;
+  --tone-2: #16a34a;
+  --tone-3: #2563eb;
+  --tone-4: #9333ea;
+  --tone-5: #78716c;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #121211;
+    --surface: #1b1b1a;
+    --surface-2: #242422;
+    --line: #2f2f2c;
+    --ink: #ececea;
+    --muted: #9c9c96;
+    --accent: #818cf8;
+    --accent-ink: #0b0b1a;
+    --accent-soft: #23243d;
+    --success: #4ade80;
+    --success-soft: #14261b;
+    --danger: #fb923c;
+    --danger-soft: #2c1c12;
+    --warning: #facc15;
+    --warning-soft: #2a2410;
+    --tone-1: #f87171;
+    --tone-2: #4ade80;
+    --tone-3: #60a5fa;
+    --tone-4: #c084fc;
+    --tone-5: #a8a29e;
   }
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-tone-1: var(--tone-1);
+  --color-tone-2: var(--tone-2);
+  --color-tone-3: var(--tone-3);
+  --color-tone-4: var(--tone-4);
+  --color-tone-5: var(--tone-5);
+  --font-sans: var(--font-geist-sans), var(--font-noto-sc), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-cjk: var(--font-noto-sc), "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* ── Tipografía CJK y pinyin ──────────────────────────────────────────────── */
+.font-cjk {
+  font-family: var(--font-cjk);
+  font-feature-settings: "palt" 0;
+}
+
+ruby {
+  ruby-position: over;
+  ruby-align: center;
+}
+
+ruby rt {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.42em;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  padding-bottom: 0.15em;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.tone-colored ruby rt {
+  color: inherit;
+  opacity: 0.85;
+}
+
+/* Interlineado generoso cuando hay pinyin sobre el hanzi */
+.leading-ruby {
+  line-height: 2.4;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+  100% { box-shadow: 0 0 0 8px transparent; }
+}
+
+.speaking {
+  animation: pulse-ring 1s ease-out infinite;
 }

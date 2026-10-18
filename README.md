@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LingoAula
 
-## Getting Started
+Plataforma para aprender **Chino Mandarín (HSK 1–6)** e **Inglés (MCER A1–C2)** con estructura,
+interactividad real, seguimiento pedagógico y comunidad **segmentada por nivel exacto**.
 
-First, run the development server:
+> Fase 1 · MVP sin backend: todo el progreso se guarda en el navegador (localStorage).
+> La arquitectura está preparada para conectar base de datos y LLMs en la Fase 2.
+
+## Funcionalidades
+
+- **Onboarding por nivel** — idioma + nivel; todo el contenido y el aula se filtran por él.
+- **Libro de Clase Digital** — unidades y lecciones secuenciales: teoría, tablas, notas
+  culturales, vocabulario con audio, diálogos con pinyin `<ruby>` dinámico y tarjetas de hanzi
+  con desglose de radicales.
+- **Motor de ejercicios** — constructor de oraciones, completar huecos, opción múltiple y
+  práctica de tonos, con corrección inmediata y explicación del porqué.
+- **Dashboard de seguimiento** — avance del libro, racha, XP semanal, vocabulario dominado
+  (Leitner), bandeja de errores y puntos débiles.
+- **Repaso** — tarjetas con repetición espaciada y re-práctica de errores.
+- **Aula por nivel** — misiones semanales (lectura, escucha, gramática, participación) y tablón
+  con compañeros del mismo nivel, incluidas correcciones entre pares.
+- **Controles globales** — mostrar/ocultar pinyin, traducción, colores de tono y velocidad de audio
+  (Web Speech API `zh-CN` / `en-US`).
+
+Contenido completo: **HSK 2 · Unidad 1** (3 lecciones) e **Inglés B1 · Unidad 1** (3 lecciones).
+HSK 1 y A2 tienen una lección base; el resto de niveles muestra unidades planificadas.
+
+## Empezar
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+corepack enable
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script | Uso |
+| --- | --- |
+| `pnpm dev` | Servidor de desarrollo |
+| `pnpm typecheck` | Comprobación de tipos |
+| `pnpm lint` | ESLint |
+| `pnpm build` / `pnpm start` | Build y servidor de producción |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Estructura
 
-## Learn More
+```
+src/
+├── app/                      # Rutas (App Router)
+│   ├── layout.tsx            # Fuentes (Geist + Noto Sans SC) y AppShell
+│   ├── page.tsx              # /        → ProgressDashboard
+│   ├── libro/page.tsx        # /libro   → InteractiveTextbook
+│   ├── repaso/page.tsx       # /repaso  → ReviewCenter
+│   └── aula/page.tsx         # /aula    → LevelClassroom
+├── components/
+│   ├── layout/               # AppShell (hidratación + onboarding), Sidebar
+│   ├── onboarding/           # Selección de idioma, nivel y perfil
+│   ├── textbook/             # Libro: teoría, vocabulario, diálogos, hanzi, práctica
+│   ├── exercises/            # ExerciseRunner + inputs por tipo
+│   ├── dashboard/            # ProgressDashboard
+│   ├── review/               # Tarjetas Leitner + errores
+│   ├── classroom/            # Aula, misiones, tablón
+│   ├── text/                 # RichTextView (<ruby> + colores de tono)
+│   ├── audio/                # SpeakButton (TTS)
+│   └── ui/                   # Primitivas (Card, Button, Switch…)
+├── config/site.ts            # Nombre y navegación
+├── data/                     # Contenido mock (niveles, unidades, aula)
+├── hooks/useSpeech.ts        # Web Speech API
+├── lib/
+│   ├── content/              # ContentRepository (punto de enganche de la BD)
+│   ├── exercises/evaluate.ts # Evaluación + FeedbackProvider (punto de enganche del LLM)
+│   ├── richText.ts           # zh()/en(), tonos, utilidades CJK
+│   └── dates.ts              # Días, semanas ISO, tiempo relativo
+├── store/
+│   ├── useLearningStore.ts   # Zustand + persist
+│   └── selectors.ts          # Métricas derivadas
+└── types/learning.ts         # Modelos de dominio
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Documentación
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Arquitectura y plan de Fase 2](docs/ARCHITECTURE.md)
+- [Guía para crear contenido](docs/CONTENT_GUIDE.md)
+- [Despliegue: GitHub + Vercel + Cloudflare](docs/DEPLOYMENT.md)
