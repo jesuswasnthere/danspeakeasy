@@ -46,7 +46,13 @@ pnpm build        # build de producción
 | `src/components/dashboard/` | `ProgressDashboard` |
 | `src/components/classroom/` | `LevelClassroom`, misiones, tablón, `MissionWatcher` |
 | `src/components/review/` | Repaso: tarjetas Leitner + re-práctica de errores |
-| `src/app/` | Rutas: `/` (progreso), `/libro`, `/repaso`, `/aula` |
+| `src/components/practice/` | Práctica de habilidades: `StrokePractice` (hanzi trazo a trazo con nombre de cada trazo), `ReadingPractice` (lectura con audio, modo sombra), `PronunciationPractice` (micrófono + puntuación) |
+| `src/data/zh/strokes.ts` | Tipos de trazo (横, 竖, 撇…) y orden revisado de los caracteres del temario |
+| `src/data/practice.ts` | Contenido de práctica derivado de las lecciones (caracteres, lecturas, ítems de pronunciación) |
+| `src/lib/strokes.ts` | Carga de datos de trazos (CDN hanzi-writer-data) + clasificador geométrico para caracteres no anotados |
+| `src/lib/pronunciation.ts` | Comparación objetivo ↔ reconocimiento de voz (LCS + Dice), normalización de números/contracciones |
+| `src/hooks/` | `useSpeech` (TTS, secuencias con resaltado), `useVoiceRecorder` (SpeechRecognition + MediaRecorder) |
+| `src/app/` | Rutas: `/` (progreso), `/libro`, `/practica`, `/repaso`, `/aula` |
 
 ## Decisiones clave (y por qué)
 
@@ -61,6 +67,15 @@ pnpm build        # build de producción
 - **Pinyin carácter a carácter**: en `zh()` las sílabas se separan con `-` (`měi-tiān`) para poder
   usar `<ruby>` por hanzi y colorear tonos.
 - **TTS**: Web Speech API (`zh-CN` / `en-US`), gratis. Sustituible por TTS neuronal en Fase 2.
+- **Escritura de hanzi**: `hanzi-writer` (MIT) con datos de Make Me a Hanzi desde jsDelivr. Los
+  nombres de trazo salen de `CHARACTER_STROKES` (revisados y contrastados con la geometría real);
+  si un carácter no está anotado o el número de trazos no cuadra, se estiman con
+  `classifyStroke` (~96 % de acierto sobre los anotados) y la UI lo marca «nombres aproximados».
+  **Al añadir caracteres nuevos al temario, añade su anotación** en `src/data/zh/strokes.ts`.
+- **Pronunciación**: SpeechRecognition solo existe en Chrome/Edge y necesita internet. Mide
+  inteligibilidad (qué caracteres/palabras se reconocieron), no la precisión tonal: para tonos
+  reales hará falta una API de evaluación de pronunciación en la Fase 2. Siempre se graba la voz
+  (MediaRecorder) para que el alumno se compare con el modelo.
 
 ## Cómo añadir contenido
 

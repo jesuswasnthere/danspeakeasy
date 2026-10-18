@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Layers3 } from "lucide-react";
+import Link from "next/link";
+import { Layers3, PenLine } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getTone, TONE_CLASSES, TONE_LABELS } from "@/lib/richText";
 import { useLearningStore } from "@/store/useLearningStore";
@@ -77,6 +78,13 @@ function HanziCard({ c }: { c: CharacterBreakdown }) {
           <p className="text-xs text-muted">
             {TONE_LABELS[tone]} · Aparece en: <span className="font-cjk">{c.usedIn.join("、")}</span>
           </p>
+          <Link
+            href={`/practica?tab=escritura&char=${encodeURIComponent(c.char)}`}
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-accent-ink hover:opacity-90"
+          >
+            <PenLine size={14} /> Practicar escritura trazo a trazo
+          </Link>
         </div>
       ) : (
         <p className="mt-4 flex items-center gap-1.5 text-xs text-muted">

@@ -16,6 +16,13 @@ interactividad real, seguimiento pedagógico y comunidad **segmentada por nivel 
   práctica de tonos, con corrección inmediata y explicación del porqué.
 - **Dashboard de seguimiento** — avance del libro, racha, XP semanal, vocabulario dominado
   (Leitner), bandeja de errores y puntos débiles.
+- **Práctica de habilidades** —
+  - *Escritura de hanzi* trazo a trazo (animación, con guía y de memoria) mostrando el **nombre
+    de cada trazo** (横 héng, 竖 shù, 撇 piě…) a medida que se escribe, con aviso de errores.
+  - *Lectura con audio*: frase a frase con resaltado, palabras que se escuchan al tocarlas,
+    modo «solo audio» y **modo sombra** (escucha y repite).
+  - *Pronunciación*: lee en voz alta, el reconocimiento de voz puntúa qué partes se entendieron
+    y puedes escuchar tu grabación junto al modelo.
 - **Repaso** — tarjetas con repetición espaciada y re-práctica de errores.
 - **Aula por nivel** — misiones semanales (lectura, escucha, gramática, participación) y tablón
   con compañeros del mismo nivel, incluidas correcciones entre pares.

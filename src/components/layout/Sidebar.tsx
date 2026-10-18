@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Gauge, GraduationCap, Repeat2, RotateCcw, Users } from "lucide-react";
+import { BookOpen, Gauge, GraduationCap, PenTool, Repeat2, RotateCcw, Users } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { NAV, SITE } from "@/config/site";
 import { LANGUAGES, levelsFor } from "@/data/levels";
@@ -12,7 +12,7 @@ import { useOpenMistakes, useVocabStats } from "@/store/selectors";
 import { Switch } from "@/components/ui/primitives";
 import type { LanguageCode } from "@/types/learning";
 
-const ICONS = { dashboard: Gauge, book: BookOpen, review: Repeat2, classroom: Users } as const;
+const ICONS = { dashboard: Gauge, book: BookOpen, practice: PenTool, review: Repeat2, classroom: Users } as const;
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();

@@ -4,6 +4,9 @@ import type {
   Course,
   LanguageCode,
   LevelCode,
+  PracticeCharacter,
+  PronunciationItem,
+  ReadingPassage,
   WeeklyChallenge,
 } from "@/types/learning";
 import {
@@ -16,6 +19,7 @@ import {
   type VocabRef,
 } from "@/data/mockSyllabus";
 import { classmatesFor, missionSetsFor, seedPostsFor } from "@/data/classroom";
+import { practiceCharactersFor, pronunciationItemsFor, readingPassagesFor } from "@/data/practice";
 import { isoWeek, weekKey } from "@/lib/dates";
 
 /**
@@ -35,6 +39,9 @@ export interface ContentRepository {
   getWeeklyChallenge(language: LanguageCode, level: LevelCode, date: Date): WeeklyChallenge;
   getClassmates(level: LevelCode): Classmate[];
   getSeedPosts(language: LanguageCode, level: LevelCode, now: Date): ClassroomPost[];
+  getPracticeCharacters(level: LevelCode): PracticeCharacter[];
+  getReadingPassages(language: LanguageCode, level: LevelCode): ReadingPassage[];
+  getPronunciationItems(level: LevelCode): PronunciationItem[];
 }
 
 export const mockContentRepository: ContentRepository = {
@@ -50,4 +57,7 @@ export const mockContentRepository: ContentRepository = {
   },
   getClassmates: classmatesFor,
   getSeedPosts: seedPostsFor,
+  getPracticeCharacters: practiceCharactersFor,
+  getReadingPassages: readingPassagesFor,
+  getPronunciationItems: pronunciationItemsFor,
 };

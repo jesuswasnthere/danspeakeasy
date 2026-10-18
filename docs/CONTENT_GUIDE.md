@@ -42,3 +42,22 @@ zh("我:wǒ 每天:měi-tiān 七:qī 点:diǎn 起床:qǐ-chuáng 。");
 4. Misiones semanales del nivel: añade un `MissionSet` en `MISSION_SETS` (`src/data/classroom.ts`).
    Rotan automáticamente por semana ISO.
 5. Ejecuta `pnpm typecheck` — los tipos validan la forma del contenido.
+
+## Práctica de escritura: nombres de los trazos
+
+La sección **Práctica → Escritura** toma automáticamente los caracteres de las lecciones del
+nivel. Para que cada trazo muestre su nombre oficial, anota el carácter en
+`src/data/zh/strokes.ts` → `CHARACTER_STROKES`:
+
+```ts
+冷: ["dian", "ti", "pie", "na", "dian", "hengpie", "dian"],
+```
+
+- Usa el orden de trazos estándar de China continental (el de los datos de Make Me a Hanzi).
+- El número de entradas debe coincidir con el número de trazos de los datos; si no, la app ignora
+  la anotación y usa el clasificador automático («nombres aproximados»).
+- Tipos disponibles: ver `STROKE_TYPES` (横 heng, 竖 shu, 撇 pie, 捺 na, 点 dian, 提 ti, 横折,
+  横撇, 横折钩, 横折弯钩, 横钩, 竖钩, 竖弯钩, 竖提, 竖折, 竖弯, 撇点, 撇折, 弯钩, 斜钩, 卧钩).
+
+Las lecturas con audio y la pronunciación se generan solas a partir de los diálogos, el
+vocabulario y las lecturas de las misiones semanales.

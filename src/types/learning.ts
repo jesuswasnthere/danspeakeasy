@@ -376,6 +376,50 @@ export interface ClassroomPost {
   replies: ClassroomReply[];
 }
 
+// ─── Práctica de habilidades (escritura, lectura, pronunciación) ─────────────
+
+export interface PracticeCharacter {
+  char: string;
+  pinyin?: string;
+  meaning?: string;
+  /** Desglose completo si la lección lo incluye. */
+  breakdown?: CharacterBreakdown;
+  /** Palabras del nivel donde aparece. */
+  words: string[];
+  lessonId: string;
+}
+
+export interface ReadingSentence {
+  text: RichText;
+  translation?: string;
+  speaker?: string;
+}
+
+export interface ReadingPassage {
+  id: string;
+  title: string;
+  /** De dónde sale el texto (lección, misión…). */
+  source: string;
+  kind: "diálogo" | "lectura";
+  sentences: ReadingSentence[];
+  /** Traducción completa cuando no hay traducción por frase. */
+  translation?: string;
+}
+
+export interface PronunciationItem {
+  id: string;
+  kind: "palabra" | "frase";
+  text: RichText;
+  /** Texto plano para TTS y para comparar con el reconocimiento de voz. */
+  plain: string;
+  translation: string;
+  source: string;
+  /** Solo palabras en chino: pinyin y tonos para mostrarlas grandes y coloreadas. */
+  pinyin?: string;
+  tones?: number[];
+  ipa?: string;
+}
+
 // ─── Estado del alumno (persistido) ──────────────────────────────────────────
 
 export interface StudyPreferences {

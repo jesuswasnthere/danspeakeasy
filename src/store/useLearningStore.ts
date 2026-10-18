@@ -28,7 +28,14 @@ export const XP = {
   lessonCompleted: 50,
   wordReviewed: 2,
   post: 5,
+  characterWritten: 5,
+  characterPerfect: 5,
+  pronunciationGood: 5,
+  readingCompleted: 15,
 } as const;
+
+/** Puntuación (0-100) a partir de la cual una pronunciación cuenta como buena. */
+export const PRONUNCIATION_PASS = 70;
 
 /** Días hasta el siguiente repaso según la caja Leitner. */
 export const LEITNER_INTERVALS: Record<VocabCard["box"], number> = { 1: 0, 2: 1, 3: 3, 4: 7, 5: 14 };
@@ -41,6 +48,15 @@ export const ME = "me";
 export interface Profile {
   name: string;
   avatar: string;
+}
+
+export interface PracticeStats {
+  /** Escritura de caracteres: por hanzi. */
+  strokes: Record<string, { attempts: number; completions: number; bestMistakes: number; lastAt: string }>;
+  /** Pronunciación: por id de ítem. */
+  pronunciation: Record<string, { attempts: number; bestScore: number; lastScore: number; lastAt: string }>;
+  /** Lecturas completadas: por id de texto. */
+  readings: Record<string, { completions: number; lastAt: string }>;
 }
 
 export interface LearningData {
@@ -62,6 +78,7 @@ export interface LearningData {
   /** Respuestas del alumno a posts de compañeros (mock). */
   repliesByPost: Record<string, ClassroomReply[]>;
   likedPosts: string[];
+  practice: PracticeStats;
 }
 
 export interface RecordExerciseInput {
@@ -92,6 +109,9 @@ export interface LearningActions {
   publishPost(input: { content: string; tag: ClassroomPost["tag"]; missionId?: string; missionXp?: number }): void;
   replyToPost(postId: string, content: string): void;
   toggleLike(postId: string): void;
+  recordCharacterWriting(char: string, mistakes: number): void;
+  recordPronunciation(itemId: string, score: number): void;
+  recordReading(passageId: string): void;
   resetProgress(): void;
 }
 
@@ -114,6 +134,7 @@ const initialData: LearningData = {
   posts: [],
   repliesByPost: {},
   likedPosts: [],
+  practice: { strokes: {}, pronunciation: {}, readings: {} },
 };
 
 // ─── Helpers puros ────────────────────────────────────────────────────────────
@@ -352,6 +373,63 @@ export const useLearningStore = create<LearningStore>()(
             : [...s.likedPosts, postId],
         })),
 
+      recordCharacterWriting: (char, mistakes) =>
+        set((s) => {
+          const prev = s.practice.strokes[char];
+          return {
+            practice: {
+              ...s.practice,
+              strokes: {
+                ...s.practice.strokes,
+                [char]: {
+                  attempts: (prev?.attempts ?? 0) + 1,
+                  completions: (prev?.completions ?? 0) + 1,
+                  bestMistakes: Math.min(mistakes, prev?.bestMistakes ?? Infinity),
+                  lastAt: new Date().toISOString(),
+                },
+              },
+            },
+            activity: bumpActivity(s.activity, {
+              xp: XP.characterWritten + (mistakes === 0 ? XP.characterPerfect : 0),
+            }),
+          };
+        }),
+
+      recordPronunciation: (itemId, score) =>
+        set((s) => {
+          const prev = s.practice.pronunciation[itemId];
+          return {
+            practice: {
+              ...s.practice,
+              pronunciation: {
+                ...s.practice.pronunciation,
+                [itemId]: {
+                  attempts: (prev?.attempts ?? 0) + 1,
+                  bestScore: Math.max(score, prev?.bestScore ?? 0),
+                  lastScore: score,
+                  lastAt: new Date().toISOString(),
+                },
+              },
+            },
+            activity: bumpActivity(s.activity, { xp: score >= PRONUNCIATION_PASS ? XP.pronunciationGood : 0 }),
+          };
+        }),
+
+      recordReading: (passageId) =>
+        set((s) => {
+          const prev = s.practice.readings[passageId];
+          return {
+            practice: {
+              ...s.practice,
+              readings: {
+                ...s.practice.readings,
+                [passageId]: { completions: (prev?.completions ?? 0) + 1, lastAt: new Date().toISOString() },
+              },
+            },
+            activity: bumpActivity(s.activity, { xp: XP.readingCompleted }),
+          };
+        }),
+
       resetProgress: () => set({ ...initialData }),
     }),
     {
@@ -378,7 +456,13 @@ export const useLearningStore = create<LearningStore>()(
         posts: s.posts,
         repliesByPost: s.repliesByPost,
         likedPosts: s.likedPosts,
+        practice: s.practice,
       }),
+      // Los datos guardados antes de añadir `practice` no lo traen: completamos con valores por defecto.
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<LearningData>;
+        return { ...current, ...p, practice: { ...initialData.practice, ...p.practice } };
+      },
     },
   ),
 );
