@@ -1,29 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LANGUAGES } from "@/data/levels";
+import { speakText, stopAll, type Playback } from "@/lib/tts";
 import { useLearningStore } from "@/store/useLearningStore";
 import type { LanguageCode } from "@/types/learning";
 
 /**
- * Text-to-speech nativo (Web Speech API). Fase 1: gratis y sin backend.
- * Fase 2: se puede sustituir por un proveedor TTS neuronal manteniendo la firma.
+ * Hook de audio para los componentes. Usa el motor de `lib/tts`: voz del
+ * navegador si existe para el idioma y, si no, audio MP3 desde `/api/tts`.
  */
 
-function pickVoice(speechLang: string): SpeechSynthesisVoice | undefined {
-  const voices = window.speechSynthesis.getVoices();
-  const target = speechLang.toLowerCase();
-  const base = target.split("-")[0];
-  const norm = (v: SpeechSynthesisVoice) => v.lang.replace("_", "-").toLowerCase();
-  return (
-    voices.find((v) => norm(v) === target && /natural|neural|google|premium/i.test(v.name)) ??
-    voices.find((v) => norm(v) === target) ??
-    voices.find((v) => norm(v).startsWith(base))
-  );
-}
-
 export function isSpeechSupported(): boolean {
-  return typeof window !== "undefined" && "speechSynthesis" in window;
+  return typeof window !== "undefined" && ("speechSynthesis" in window || "Audio" in window);
 }
 
 export interface SequenceOptions {
@@ -35,98 +23,77 @@ export interface SequenceOptions {
   rate?: number;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export function useSpeech() {
   const rate = useLearningStore((s) => s.preferences.speechRate);
   const registerAudioPlay = useLearningStore((s) => s.registerAudioPlay);
   const [speaking, setSpeaking] = useState(false);
   const mounted = useRef(true);
-  /** Identificador de la secuencia activa: al cambiar, las anteriores se abandonan. */
-  const seq = useRef(0);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Identificador de la reproducción de ESTE componente: si cambia, la anterior se abandona. */
+  const run = useRef(0);
+  const playback = useRef<Playback | null>(null);
 
   useEffect(() => {
     mounted.current = true;
-    // Algunos navegadores cargan las voces de forma asíncrona.
-    if (isSpeechSupported()) window.speechSynthesis.getVoices();
     return () => {
-      // `playAt` comprueba `mounted`, así que las secuencias pendientes se abandonan solas.
       mounted.current = false;
-      if (timer.current) clearTimeout(timer.current);
+      playback.current?.stop();
     };
   }, []);
 
-  const utterance = useCallback(
-    (text: string, language: LanguageCode, customRate?: number) => {
-      const speechLang = LANGUAGES[language].speechLang;
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = speechLang;
-      const voice = pickVoice(speechLang);
-      if (voice) u.voice = voice;
-      u.rate = customRate ?? rate;
-      return u;
+  /** Reproduce una lista de textos en orden; devuelve false si se interrumpió. */
+  const playList = useCallback(
+    async (texts: string[], language: LanguageCode, opts: SequenceOptions = {}) => {
+      const id = ++run.current;
+      const alive = () => id === run.current && mounted.current;
+      setSpeaking(true);
+      try {
+        for (let i = 0; i < texts.length; i++) {
+          if (!alive()) return false;
+          opts.onIndex?.(i);
+          const p = speakText(texts[i], language, opts.rate ?? rate);
+          playback.current = p;
+          await p.done;
+          if (!alive() || p.interrupted) return false;
+          // También tras la última frase: en modo sombra el alumno debe poder repetirla.
+          if (opts.gapMs) await sleep(opts.gapMs(i, texts[i]));
+        }
+        if (alive()) opts.onDone?.();
+        return true;
+      } catch {
+        return false;
+      } finally {
+        if (id === run.current && mounted.current) setSpeaking(false);
+      }
     },
     [rate],
   );
 
   const speak = useCallback(
     (texts: string | string[], language: LanguageCode, opts?: { rate?: number; track?: boolean }) => {
-      if (!isSpeechSupported()) return;
-      const synth = window.speechSynthesis;
-      seq.current++;
-      synth.cancel();
       const list = (Array.isArray(texts) ? texts : [texts]).filter(Boolean);
       if (!list.length) return;
-      list.forEach((text, i) => {
-        const u = utterance(text, language, opts?.rate);
-        if (i === 0) u.onstart = () => mounted.current && setSpeaking(true);
-        if (i === list.length - 1) {
-          u.onend = () => mounted.current && setSpeaking(false);
-          u.onerror = () => mounted.current && setSpeaking(false);
-        }
-        synth.speak(u);
-      });
       if (opts?.track !== false) registerAudioPlay();
+      void playList(list, language, { rate: opts?.rate });
     },
-    [utterance, registerAudioPlay],
+    [playList, registerAudioPlay],
   );
 
-  /** Lee una lista de frases una a una, avisando de cuál suena (para resaltarla). */
+  /** Lee frase a frase avisando de cuál suena (para resaltarla). */
   const speakSequence = useCallback(
     (texts: string[], language: LanguageCode, opts: SequenceOptions = {}) => {
-      if (!isSpeechSupported() || !texts.length) return;
-      const synth = window.speechSynthesis;
-      synth.cancel();
-      if (timer.current) clearTimeout(timer.current);
-      const id = ++seq.current;
-      const playAt = (i: number) => {
-        if (id !== seq.current || !mounted.current) return;
-        if (i >= texts.length) {
-          setSpeaking(false);
-          opts.onDone?.();
-          return;
-        }
-        opts.onIndex?.(i);
-        const u = utterance(texts[i], language, opts.rate);
-        const next = () => {
-          const gap = opts.gapMs?.(i, texts[i]) ?? 250;
-          timer.current = setTimeout(() => playAt(i + 1), gap);
-        };
-        u.onend = next;
-        u.onerror = next;
-        synth.speak(u);
-      };
-      setSpeaking(true);
+      if (!texts.length) return;
       registerAudioPlay();
-      playAt(0);
+      void playList(texts, language, { gapMs: () => 250, ...opts });
     },
-    [utterance, registerAudioPlay],
+    [playList, registerAudioPlay],
   );
 
   const stop = useCallback(() => {
-    if (!isSpeechSupported()) return;
-    seq.current++;
-    if (timer.current) clearTimeout(timer.current);
-    window.speechSynthesis.cancel();
+    run.current++;
+    playback.current?.stop();
+    stopAll();
     setSpeaking(false);
   }, []);
 

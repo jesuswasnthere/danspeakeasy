@@ -8,6 +8,7 @@ import { useLearningStore } from "@/store/useLearningStore";
 import { useHydrated } from "@/store/selectors";
 import { Onboarding } from "@/components/onboarding/Onboarding";
 import { MissionWatcher } from "@/components/classroom/LevelClassroom";
+import { warmUpVoices } from "@/lib/tts";
 import { Sidebar } from "./Sidebar";
 
 /**
@@ -23,6 +24,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void useLearningStore.persist.rehydrate();
+    warmUpVoices();
   }, []);
 
   if (!hydrated) return <ShellSkeleton />;

@@ -66,7 +66,11 @@ pnpm build        # build de producción
   sola (`MissionWatcher`); participación al publicar vinculado a la misión.
 - **Pinyin carácter a carácter**: en `zh()` las sílabas se separan con `-` (`měi-tiān`) para poder
   usar `<ruby>` por hanzi y colorear tonos.
-- **TTS**: Web Speech API (`zh-CN` / `en-US`), gratis. Sustituible por TTS neuronal en Fase 2.
+- **TTS** (`src/lib/tts.ts`, usado vía `useSpeech`): primero la voz del navegador (Web Speech
+  API) si existe para el idioma; si no hay voz (Windows sin voz china, Firefox, el navegador
+  integrado de Claude/Electron, que no expone ninguna voz) o falla, cae a MP3 desde
+  `/api/tts` (Google Translate TTS no oficial, cacheado en CDN). Un solo audio suena a la vez.
+  Fase 2: cambiar `/api/tts` a un proveedor oficial (Azure / Google Cloud) con API key.
 - **Escritura de hanzi**: `hanzi-writer` (MIT) con datos de Make Me a Hanzi desde jsDelivr. Los
   nombres de trazo salen de `CHARACTER_STROKES` (revisados y contrastados con la geometría real);
   si un carácter no está anotado o el número de trazos no cuadra, se estiman con
