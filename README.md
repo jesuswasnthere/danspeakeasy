@@ -62,6 +62,7 @@ src/
 │       ├── page.tsx          # /app          → ProgressDashboard
 │       ├── libro/page.tsx    # /app/libro    → InteractiveTextbook
 │       ├── fonetica/page.tsx # /app/fonetica → PhoneticsCenter (chino HSK 1–2)
+│       ├── radicales/page.tsx # /app/radicales → RadicalsCenter (chino)
 │       ├── practica/page.tsx # /app/practica → PracticeHub
 │       ├── repaso/page.tsx   # /app/repaso   → ReviewCenter
 │       └── aula/page.tsx     # /app/aula     → LevelClassroom

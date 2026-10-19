@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AudioLines, BookOpen, Gauge, GraduationCap, PenTool, Repeat2, RotateCcw, Users } from "lucide-react";
+import { AudioLines, BookOpen, Gauge, GraduationCap, PenTool, Repeat2, RotateCcw, Shapes, Users } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { APP_HOME, NAV, SITE, type NavIcon } from "@/config/site";
 import { LANGUAGES, levelsFor } from "@/data/levels";
@@ -16,6 +16,7 @@ const ICONS: Record<NavIcon, typeof Gauge> = {
   dashboard: Gauge,
   book: BookOpen,
   phonetics: AudioLines,
+  radicals: Shapes,
   practice: PenTool,
   review: Repeat2,
   classroom: Users,

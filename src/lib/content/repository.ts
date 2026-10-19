@@ -5,8 +5,11 @@ import type {
   LanguageCode,
   LevelCode,
   PhoneticsModule,
+  PhoneticFamily,
   PracticeCharacter,
   PronunciationItem,
+  Radical,
+  RadicalCategory,
   ReadingPassage,
   WeeklyChallenge,
 } from "@/types/learning";
@@ -21,6 +24,7 @@ import {
 } from "@/data/mockSyllabus";
 import { classmatesFor, missionSetsFor, seedPostsFor } from "@/data/classroom";
 import { PHONETICS_BY_LEVEL } from "@/data/zh/phonetics";
+import { PHONETIC_FAMILIES, RADICALS, RADICAL_CATEGORIES, RADICAL_VISIBLE_COMPONENTS } from "@/data/zh/radicals";
 import { practiceCharactersFor, pronunciationItemsFor, readingPassagesFor } from "@/data/practice";
 import { isoWeek, weekKey } from "@/lib/dates";
 
@@ -46,6 +50,8 @@ export interface ContentRepository {
   getPronunciationItems(level: LevelCode): PronunciationItem[];
   /** Módulos de fonética del nivel (solo chino HSK 1–2; vacío en el resto). */
   getPhoneticsModules(level: LevelCode): PhoneticsModule[];
+  /** Radicales del chino (común a todos los niveles HSK). */
+  getRadicals(): { categories: RadicalCategory[]; radicals: Radical[]; families: PhoneticFamily[]; visibleComponents: Record<string, string[]> };
 }
 
 export const mockContentRepository: ContentRepository = {
@@ -65,4 +71,5 @@ export const mockContentRepository: ContentRepository = {
   getReadingPassages: readingPassagesFor,
   getPronunciationItems: pronunciationItemsFor,
   getPhoneticsModules: (level) => PHONETICS_BY_LEVEL[level as keyof typeof PHONETICS_BY_LEVEL] ?? [],
+  getRadicals: () => ({ categories: RADICAL_CATEGORIES, radicals: RADICALS, families: PHONETIC_FAMILIES, visibleComponents: RADICAL_VISIBLE_COMPONENTS }),
 };

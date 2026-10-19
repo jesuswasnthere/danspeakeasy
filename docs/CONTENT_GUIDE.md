@@ -56,6 +56,20 @@ Los módulos viven en `src/data/zh/phonetics.ts` y se registran en `PHONETICS_BY
 - AFI aproximada y sin corchetes en `ipa` (la UI los añade).
 - Los `id` de ejercicio deben ser únicos (`zh-phon-hsk1-m3-e2`): los fallos se guardan por id.
 
+## Radicales (chino)
+
+Viven en `src/data/zh/radicals.ts` (`RADICALS`, agrupados por `RADICAL_CATEGORIES`) y se leen con
+`content.getRadicals()`. Un `Radical` lleva su forma independiente (`glyph`), las variantes que adopta
+dentro de otros caracteres (`variants`, p. ej. 氵 de 水), el apodo coloquial (`nickname`, 三点水), cómo
+reconocerlo (`recognize`), su uso diario (`usage`) y `examples` reales.
+
+- Los ejemplos deben ser vocabulario común. Si un ejemplo contiene a la vista otros radicales del
+  catálogo, anótalos en `RADICAL_VISIBLE_COMPONENTS` (hanzi → ids): el quiz los usa para no ofrecer
+  como distractor un radical visible en el carácter (`includes` no sirve: cada hanzi es un solo punto Unicode).
+- `core: true` marca los imprescindibles (filtro «Solo los imprescindibles»).
+- `PHONETIC_FAMILIES` muestra un mismo componente de sonido con radicales distintos (青 → 清 请 晴 情).
+- Si dos radicales se escriben igual (阝, 月), el quiz no pregunta su significado en abstracto: solo los pregunta con un carácter de ejemplo.
+
 ## Práctica de escritura: nombres de los trazos
 
 La sección **Práctica → Escritura** toma automáticamente los caracteres de las lecciones del
