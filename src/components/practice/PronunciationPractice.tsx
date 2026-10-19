@@ -7,7 +7,7 @@ import { content } from "@/lib/content";
 import { cn } from "@/lib/cn";
 import { bestAlternative, feedbackFor } from "@/lib/pronunciation";
 import { getTone, isRichTokens, syllables, TONE_LABELS, type Tone } from "@/lib/richText";
-import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
+import { useVoiceRecorder, type MicIssue } from "@/hooks/useVoiceRecorder";
 import { PRONUNCIATION_PASS, useLearningStore } from "@/store/useLearningStore";
 import type { LanguageCode, PronunciationItem } from "@/types/learning";
 import { RichTextView, ToneColoredTerm } from "@/components/text/RichTextView";
@@ -73,6 +73,66 @@ export function PronunciationPractice() {
           onPrev={index > 0 ? () => setIndex((i) => i - 1) : undefined}
           onNext={index < items.length - 1 ? () => setIndex((i) => i + 1) : undefined}
         />
+      )}
+    </div>
+  );
+}
+
+/** Barras que se mueven con el volumen: confirman que llega audio del micrófono. */
+function LevelMeter({ level }: { level: number }) {
+  const bars = 14;
+  return (
+    <div className="flex h-8 items-end gap-1" aria-label="Nivel del micrófono">
+      {Array.from({ length: bars }, (_, i) => {
+        const threshold = (i + 1) / bars;
+        const on = level >= threshold * 0.9;
+        return (
+          <span
+            key={i}
+            className={cn("w-1.5 rounded-full transition-all duration-75", on ? (i > bars * 0.75 ? "bg-warning" : "bg-success") : "bg-line")}
+            style={{ height: `${30 + threshold * 70}%` }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function MicIssueBanner({ issue, recognitionSupported }: { issue: MicIssue; recognitionSupported: boolean }) {
+  const [copied, setCopied] = useState(false);
+  if (!issue && recognitionSupported) return null;
+
+  const copy = () => {
+    void navigator.clipboard?.writeText(window.location.href).then(() => setCopied(true));
+  };
+
+  const content =
+    issue === "embedded" ? (
+      <>
+        <p className="font-medium">Este navegador integrado no permite usar el micrófono.</p>
+        <p>Abre esta página en Chrome o Edge para practicar la pronunciación.</p>
+      </>
+    ) : issue === "denied" ? (
+      <>
+        <p className="font-medium">El micrófono está bloqueado para esta página.</p>
+        <p>
+          Pulsa el icono del candado junto a la dirección → <b>Micrófono: Permitir</b> → recarga la página.
+        </p>
+      </>
+    ) : (
+      <>
+        <p className="font-medium">Este navegador no tiene reconocimiento de voz.</p>
+        <p>Para obtener puntuación usa Chrome o Edge. Aquí aún puedes grabarte y comparar tu voz con el modelo.</p>
+      </>
+    );
+
+  return (
+    <div className="flex max-w-lg flex-col items-center gap-2 rounded-xl border border-warning/30 bg-warning-soft p-3 text-center text-sm">
+      {content}
+      {issue === "embedded" && (
+        <Button size="sm" variant="secondary" onClick={copy}>
+          {copied ? "¡Enlace copiado!" : "Copiar enlace para Chrome / Edge"}
+        </Button>
       )}
     </div>
   );
@@ -167,15 +227,11 @@ function PronunciationCard({
 
       {/* Micrófono */}
       <div className="flex flex-col items-center gap-3">
-        {!rec.recognitionSupported && (
-          <p className="max-w-md text-center text-sm text-warning">
-            Tu navegador no tiene reconocimiento de voz (usa Chrome o Edge para obtener puntuación). Aún puedes grabarte y comparar tu voz con el modelo.
-          </p>
-        )}
+        <MicIssueBanner issue={rec.issue} recognitionSupported={rec.recognitionSupported} />
         <button
           type="button"
           onClick={() => (listening ? rec.stop() : rec.start(language))}
-          disabled={!rec.recordingSupported && !rec.recognitionSupported}
+          disabled={rec.issue === "embedded" || (!rec.recordingSupported && !rec.recognitionSupported)}
           className={cn(
             "flex h-20 w-20 items-center justify-center rounded-full text-white shadow-lg transition disabled:opacity-40",
             listening ? "speaking bg-danger" : "bg-accent hover:scale-105",
@@ -184,12 +240,27 @@ function PronunciationCard({
         >
           {listening ? <Square size={28} /> : <Mic size={30} />}
         </button>
+        {listening && <LevelMeter level={rec.level} />}
         <p className="text-sm text-muted">
-          {listening ? (rec.interim ? <span className="font-cjk text-ink">«{rec.interim}»</span> : "Te escucho… habla ahora") : "Pulsa y lee en voz alta"}
+          {listening ? (
+            rec.interim ? (
+              <span className="font-cjk text-ink">«{rec.interim}»</span>
+            ) : (
+              "Te escucho… habla ahora (pulsa ■ al terminar)"
+            )
+          ) : (
+            "Pulsa el micrófono y lee en voz alta"
+          )}
         </p>
         {rec.error && (
-          <p className="flex items-center gap-1.5 text-sm text-danger">
-            <MicOff size={14} /> {rec.error}
+          <p className="flex max-w-md items-start gap-1.5 text-center text-sm text-danger">
+            <MicOff size={14} className="mt-0.5 shrink-0" /> {rec.error}
+          </p>
+        )}
+        {rec.status === "error" && rec.silent && (
+          <p className="max-w-md text-center text-xs text-muted">
+            El medidor no detectó sonido: puede que el navegador esté usando otro micrófono. Revisa el micrófono seleccionado en los
+            ajustes del sitio (icono junto a la dirección) y en Windows.
           </p>
         )}
       </div>
