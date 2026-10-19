@@ -79,7 +79,7 @@ function HanziCard({ c }: { c: CharacterBreakdown }) {
             {TONE_LABELS[tone]} · Aparece en: <span className="font-cjk">{c.usedIn.join("、")}</span>
           </p>
           <Link
-            href={`/practica?tab=escritura&char=${encodeURIComponent(c.char)}`}
+            href={`/app/practica?tab=escritura&char=${encodeURIComponent(c.char)}`}
             onClick={(e) => e.stopPropagation()}
             className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-accent-ink hover:opacity-90"
           >

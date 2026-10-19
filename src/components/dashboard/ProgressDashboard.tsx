@@ -67,7 +67,7 @@ export function ProgressDashboard() {
         </div>
         {book.nextLesson && (
           <Link
-            href="/libro"
+            href="/app/libro"
             onClick={() => useLearningStore.getState().openLesson(book.nextLesson!.id)}
             className="flex items-center gap-3 rounded-2xl bg-accent px-5 py-3 text-accent-ink transition hover:opacity-90"
           >
@@ -139,7 +139,7 @@ export function ProgressDashboard() {
             title={`Misiones · Aula ${LEVELS[level].label}`}
             subtitle={`${missions.completed}/${missions.statuses.length} completadas · ${missions.xpEarned}/${missions.xpTotal} XP`}
             action={
-              <Link href="/aula" className="text-sm font-medium text-accent hover:underline">
+              <Link href="/app/aula" className="text-sm font-medium text-accent hover:underline">
                 Ir al aula
               </Link>
             }
@@ -167,7 +167,7 @@ export function ProgressDashboard() {
             subtitle="Tu antídoto contra el estancamiento: practica justo lo que fallas."
             action={
               mistakes.open.length > 0 && (
-                <Link href="/repaso?tab=errores" className="text-sm font-medium text-accent hover:underline">
+                <Link href="/app/repaso?tab=errores" className="text-sm font-medium text-accent hover:underline">
                   Repasar todo
                 </Link>
               )
@@ -235,7 +235,7 @@ export function ProgressDashboard() {
               </div>
               {vocab.due.length > 0 && (
                 <Link
-                  href="/repaso"
+                  href="/app/repaso"
                   className="mt-4 flex items-center justify-between rounded-xl bg-accent-soft px-3 py-2 text-sm font-medium text-accent"
                 >
                   {vocab.due.length} tarjetas para repasar hoy <ArrowRight size={15} />

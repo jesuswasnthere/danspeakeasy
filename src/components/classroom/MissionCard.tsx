@@ -69,7 +69,7 @@ export function MissionCard({
                 <span className="font-medium">Enfoque de la semana:</span> <span className="font-cjk">{mission.focus}</span>
               </p>
               <p className="mt-1 text-muted">Cada ejercicio que aciertes en el Libro de Clase (o en Repaso) suma automáticamente.</p>
-              <Link href="/libro" className="mt-3 inline-flex items-center gap-1.5 font-medium text-accent hover:underline">
+              <Link href="/app/libro" className="mt-3 inline-flex items-center gap-1.5 font-medium text-accent hover:underline">
                 <PenLine size={14} /> Ir a practicar
               </Link>
             </div>

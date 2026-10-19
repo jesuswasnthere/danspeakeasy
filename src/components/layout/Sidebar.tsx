@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, Gauge, GraduationCap, PenTool, Repeat2, RotateCcw, Users } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
-import { NAV, SITE } from "@/config/site";
+import { APP_HOME, NAV, SITE } from "@/config/site";
 import { LANGUAGES, levelsFor } from "@/data/levels";
 import { cn } from "@/lib/cn";
 import { useLearningStore } from "@/store/useLearningStore";
@@ -33,11 +33,11 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   );
   const due = useVocabStats().due.length;
   const mistakes = useOpenMistakes().open.length;
-  const badges: Record<string, number> = { "/repaso": due + mistakes };
+  const badges: Record<string, number> = { "/app/repaso": due + mistakes };
 
   return (
     <aside className="flex h-full w-72 flex-col gap-5 overflow-y-auto border-r border-line bg-surface px-4 py-5">
-      <Link href="/" onClick={onNavigate} className="flex items-center gap-2.5 px-2">
+      <Link href={APP_HOME} onClick={onNavigate} className="flex items-center gap-2.5 px-2">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-accent-ink">
           <GraduationCap size={20} />
         </div>
@@ -97,7 +97,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       <nav className="flex flex-col gap-0.5">
         {NAV.map((item) => {
           const Icon = ICONS[item.icon];
-          const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          const active = item.href === APP_HOME ? pathname === APP_HOME : pathname.startsWith(item.href);
           const badge = badges[item.href];
           return (
             <Link
@@ -110,7 +110,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               )}
             >
               <Icon size={18} />
-              <span className="flex-1">{item.href === "/aula" ? `Aula ${s.level.replace("HSK", "HSK ")}` : item.label}</span>
+              <span className="flex-1">{item.href === "/app/aula" ? `Aula ${s.level.replace("HSK", "HSK ")}` : item.label}</span>
               {!!badge && (
                 <span className="rounded-full bg-danger-soft px-1.5 text-xs font-semibold text-danger">{badge}</span>
               )}

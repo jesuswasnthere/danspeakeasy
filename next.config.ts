@@ -19,6 +19,18 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  /**
+   * La app del alumno se movió a /app (la raíz es ahora la landing pública).
+   * Redirigimos las rutas antiguas para no romper marcadores ni enlaces compartidos;
+   * la query se conserva (p. ej. /repaso?tab=errores).
+   */
+  async redirects() {
+    return ["libro", "practica", "repaso", "aula"].map((section) => ({
+      source: `/${section}`,
+      destination: `/app/${section}`,
+      permanent: true,
+    }));
+  },
   partialPrefetching: true,
   turbopack: {
     rules: {
