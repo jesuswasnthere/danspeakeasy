@@ -6,6 +6,7 @@ import { ArrowRight, Check, Eye, EyeOff, Lightbulb, Loader2, Play, RotateCcw, Vo
 import { cn } from "@/lib/cn";
 import { loadCharacterData, strokeNamesFor, type StrokeNames } from "@/lib/strokes";
 import { useSpeech } from "@/hooks/useSpeech";
+import { preloadSpeech, speakText, type Playback } from "@/lib/tts";
 import { useLearningStore, XP } from "@/store/useLearningStore";
 import type { PracticeCharacter } from "@/types/learning";
 import { SpeakButton } from "@/components/audio/SpeakButton";
@@ -20,6 +21,8 @@ const MODES: { id: Mode; label: string; hint: string; icon: typeof Play }[] = [
 ];
 
 const SIZE = 300;
+/** Pausa entre trazos en la animación, después de que acaben el dibujo y el nombre. */
+const STROKE_PAUSE_MS = 450;
 
 function cssVar(name: string, fallback: string) {
   const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -37,6 +40,7 @@ export function StrokePractice({ item, onNext }: { item: PracticeCharacter; onNe
   const hostRef = useRef<HTMLDivElement>(null);
   const writerRef = useRef<HanziWriter | null>(null);
   const { speak } = useSpeech();
+  const speechRate = useLearningStore((s) => s.preferences.speechRate);
   const recordCharacterWriting = useLearningStore((s) => s.recordCharacterWriting);
   const stats = useLearningStore((s) => s.practice.strokes[item.char]);
 
@@ -55,8 +59,13 @@ export function StrokePractice({ item, onNext }: { item: PracticeCharacter; onNe
   }, [voice]);
 
   const sayStroke = (name: string) => {
-    if (voiceRef.current) speak(name, "zh", { track: false, rate: 0.9 });
+    if (voiceRef.current) speak(name, "zh", { track: false });
   };
+
+  // Precargar el audio de los nombres para que suene a la vez que se dibuja el trazo.
+  useEffect(() => {
+    if (names) preloadSpeech([...new Set(names.strokes.map((s) => s.name))], "zh");
+  }, [names]);
 
   // 1) Cargar datos y crear el escritor.
   useEffect(() => {
@@ -73,7 +82,8 @@ export function StrokePractice({ item, onNext }: { item: PracticeCharacter; onNe
           padding: 18,
           showCharacter: false,
           showOutline: true,
-          strokeAnimationSpeed: 0.9,
+          // Más lento que el valor por defecto: da tiempo a seguir el trazo con la vista.
+          strokeAnimationSpeed: 0.55,
           delayBetweenStrokes: 250,
           strokeColor: cssVar("--ink", "#1d1d1b"),
           radicalColor: cssVar("--accent", "#4f46e5"),
@@ -109,16 +119,25 @@ export function StrokePractice({ item, onNext }: { item: PracticeCharacter; onNe
     if (mode === "demo") {
       w.showOutline();
       w.hideCharacter();
+      let playback: Playback | null = null;
       (async () => {
         await sleep(300);
         for (let i = 0; i < total && !cancelled; i++) {
           setCurrent(i);
-          sayStroke(names.strokes[i].name);
-          await new Promise<void>((res) => w.animateStroke(i, { onComplete: () => res() }));
-          await sleep(500);
+          // El trazo y su nombre van a la par: el siguiente no empieza hasta que
+          // terminan ambos (animación y audio).
+          const animation = new Promise<void>((res) => w.animateStroke(i, { onComplete: () => res() }));
+          playback = voiceRef.current ? speakText(names.strokes[i].name, "zh", speechRate) : null;
+          await Promise.all([animation, playback?.done.catch(() => {})]);
+          if (cancelled) return;
+          await sleep(STROKE_PAUSE_MS);
         }
         if (!cancelled) setCurrent(total);
       })();
+      return () => {
+        cancelled = true;
+        playback?.stop();
+      };
     } else {
       w.hideCharacter();
       if (mode === "guided") w.showOutline();

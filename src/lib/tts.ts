@@ -141,13 +141,51 @@ export function chunkText(text: string): string[] {
 const ttsUrl = (text: string, language: LanguageCode) =>
   `/api/tts?lang=${encodeURIComponent(LANGUAGES[language].speechLang)}&text=${encodeURIComponent(text)}`;
 
+/** Audio ya descargado (object URL) por URL de /api/tts: reproducción instantánea. */
+const preloaded = new Map<string, Promise<string>>();
+
+/**
+ * Descarga por adelantado el audio de varios textos cortos (p. ej. los nombres
+ * de los trazos) para que suenen sin retraso. Solo aplica si se usará el servidor.
+ */
+export async function preloadSpeech(texts: string[], language: LanguageCode) {
+  const { engine } = await engineFor(language);
+  if (engine !== "server") return;
+  for (const text of texts) {
+    for (const chunk of chunkText(text)) {
+      const url = ttsUrl(chunk, language);
+      if (preloaded.has(url)) continue;
+      const p = fetch(url)
+        .then((r) => {
+          if (!r.ok) throw new Error("tts");
+          return r.blob();
+        })
+        .then((b) => URL.createObjectURL(b));
+      p.catch(() => preloaded.delete(url));
+      preloaded.set(url, p);
+    }
+  }
+}
+
+async function sourceFor(url: string): Promise<string> {
+  const p = preloaded.get(url);
+  if (!p) return url;
+  try {
+    return await p;
+  } catch {
+    return url;
+  }
+}
+
 function playServer(text: string, language: LanguageCode, rate: number): Playback {
   let stopped = false;
   let audio: HTMLAudioElement | null = null;
   const run = async () => {
     for (const chunk of chunkText(text)) {
       if (stopped) return;
-      audio = new Audio(ttsUrl(chunk, language));
+      const src = await sourceFor(ttsUrl(chunk, language));
+      if (stopped) return;
+      audio = new Audio(src);
       audio.playbackRate = Math.min(2, Math.max(0.5, rate));
       audio.preservesPitch = true;
       const a = audio;
