@@ -10,6 +10,18 @@
 | Estancamiento sin seguimiento | Dashboard: avance, racha, XP semanal, vocabulario dominado (Leitner), errores y puntos débiles | `ProgressDashboard`, `selectors.ts` |
 | Sin dinamismo ni pares | Aula por nivel exacto + misiones semanales (lectura, escucha, gramática, participación) | `LevelClassroom`, `data/classroom.ts` |
 
+## Rutas
+
+| Ruta | Render | Indexable | Notas |
+| --- | --- | --- | --- |
+| `/` | Estático (Server Component) | Sí | Landing pública. No usa `AppShell` ni localStorage. Metadata, OG y JSON-LD propios. |
+| `/app`, `/app/libro`, `/app/practica`, `/app/repaso`, `/app/aula` | Solo cliente tras hidratar | No (`noindex`, `Disallow: /app/`) | `src/app/app/layout.tsx` monta `AppShell` (hidratación + onboarding) y exporta `instant = false`. |
+| `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest`, `/icon`, `/apple-icon`, `/opengraph-image` | Estático | — | Archivos de metadata de Next (`src/app/*.ts(x)`). |
+| `/api/tts` | Dinámico | No | Proxy de TTS (ver CLAUDE.md). |
+
+Las rutas antiguas sin prefijo (`/libro`, `/practica`, `/repaso`, `/aula`) redirigen con 308 a
+`/app/*` desde `next.config.ts`.
+
 ## Capas
 
 ```
@@ -23,7 +35,7 @@ UI (src/components, src/app)
 Reglas:
 
 1. **La UI no importa `src/data` directamente** (excepto `levels.ts`, que son constantes del
-   dominio). Todo el contenido pasa por `content` (`src/lib/content/index.ts`).
+   dominio; los textos de la landing viven en `src/config/landing.ts`). Todo el contenido pasa por `content` (`src/lib/content/index.ts`).
 2. **La evaluación de ejercicios es pura y determinista.** El feedback enriquecido por IA se
    añade encima vía `FeedbackProvider.enrich()`, sin cambiar los componentes.
 3. **El store solo guarda datos del alumno**, nunca contenido. Referencia el contenido por id.

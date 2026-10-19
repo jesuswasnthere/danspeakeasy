@@ -53,13 +53,24 @@ pnpm build        # build de producción
 | `src/lib/pronunciation.ts` | Comparación objetivo ↔ reconocimiento de voz (LCS + Dice), normalización de números/contracciones |
 | `src/hooks/` | `useSpeech` (TTS, secuencias con resaltado), `useVoiceRecorder` (micrófono, medidor, fin por silencio, transcripción local) |
 | `src/lib/stt.ts` + `src/workers/whisper.worker.ts` | Reconocimiento de voz en el dispositivo con Whisper (transformers.js) |
-| `src/app/` | Rutas: `/` (progreso), `/libro`, `/practica`, `/repaso`, `/aula` |
+| `src/app/page.tsx` | Landing pública `/` (Server Component prerenderizado, JSON-LD `WebSite` + `EducationalOrganization` + `FAQPage`) |
+| `src/app/app/` | App del alumno: `/app` (progreso), `/app/libro`, `/app/practica`, `/app/repaso`, `/app/aula`. Su `layout.tsx` monta `AppShell` |
+| `src/app/{robots,sitemap,manifest}.ts`, `icon.tsx`, `apple-icon.tsx`, `opengraph-image.tsx` | SEO técnico (archivos de metadata de Next) |
+| `src/config/site.ts` | `SITE` (nombre, URL canónica desde `NEXT_PUBLIC_SITE_URL`, descripción), `APP_HOME`, `NAV` |
+| `src/config/landing.ts` | FAQ de la landing (misma fuente para la sección visible y el JSON-LD) |
 
 ## Decisiones clave (y por qué)
 
+- **Landing pública SSG + app en `/app` con noindex**: `/` es un Server Component estático sin
+  `AppShell` ni localStorage (HTML con contenido real para rastreadores). La app vive en
+  `src/app/app/`, cuyo `layout.tsx` monta `AppShell`, exporta `instant = false` y
+  `robots: { index: false, follow: false }`. `robots.txt` bloquea `/app/` y `/api/`; el sitemap
+  solo lista la landing. Las rutas antiguas (`/libro`, `/practica`, `/repaso`, `/aula`) redirigen
+  con 308 a `/app/*` (`next.config.ts`). **Enlaces internos de la app: siempre con prefijo `/app`.**
 - **Hidratación manual** (`skipHydration` + `rehydrate()` en `AppShell`): el estado está en
-  localStorage, así que las páginas se renderizan solo en cliente tras hidratar. Por eso cada
-  `page.tsx` exporta `instant = false` (si no, Next 16 avisa en dev de "dropped segment").
+  localStorage, así que las páginas de `/app` se renderizan solo en cliente tras hidratar. Por eso
+  el layout de `/app` y cada `page.tsx` exportan `instant = false` (si no, Next 16 avisa en dev
+  de "dropped segment"). La landing NO lo lleva.
 - **Nivel por idioma** (`levelByLanguage`): cambiar de idioma recuerda el último nivel de cada uno.
 - **Errores**: un fallo en el libro crea/actualiza un `MistakeEntry`; solo se marca resuelto al
   acertarlo desde **Repaso** (`source: "review"`), no al reintentar justo después de ver la solución.

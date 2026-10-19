@@ -41,7 +41,23 @@ lint → build).
 3. Settings → General → **Node.js Version: 22.x**.
 4. **Deploy**. Cada push a `main` = despliegue a producción; cada PR = preview.
 
-No hacen falta variables de entorno en la Fase 1.
+### Variables de entorno
+
+| Variable | Obligatoria | Uso |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Recomendada en producción | URL pública canónica, sin barra final (p. ej. `https://tudominio.com`). Alimenta `metadataBase`, canonical, Open Graph, `robots.txt`, `sitemap.xml` y JSON-LD. |
+
+Se lee **en el build** (las páginas son estáticas): tras cambiarla, vuelve a desplegar. Si no se
+define, se usa `VERCEL_PROJECT_PRODUCTION_URL` (o `VERCEL_URL` en previews) y, en local,
+`http://localhost:3000`. Define solo el dominio principal (el que no redirige), para que el
+canonical no apunte a `www` si `www` redirige al apex.
+
+### SEO tras el primer despliegue
+
+- Comprueba `https://tudominio.com/robots.txt` y `https://tudominio.com/sitemap.xml`.
+- Da de alta el dominio en Google Search Console y envía el sitemap.
+- Valida los datos estructurados con el [Rich Results Test](https://search.google.com/test/rich-results).
+- Solo la landing (`/`) es indexable; `/app/*` lleva `noindex` y está bloqueada en robots.
 
 ## 4. Dominio en Cloudflare → Vercel
 

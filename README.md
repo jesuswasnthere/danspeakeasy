@@ -40,7 +40,7 @@ pnpm install
 pnpm dev
 ```
 
-Abre <http://localhost:3000>.
+Abre <http://localhost:3000> (landing) o <http://localhost:3000/app> (la app).
 
 | Script | Uso |
 | --- | --- |
@@ -54,11 +54,16 @@ Abre <http://localhost:3000>.
 ```
 src/
 ├── app/                      # Rutas (App Router)
-│   ├── layout.tsx            # Fuentes (Geist + Noto Sans SC) y AppShell
-│   ├── page.tsx              # /        → ProgressDashboard
-│   ├── libro/page.tsx        # /libro   → InteractiveTextbook
-│   ├── repaso/page.tsx       # /repaso  → ReviewCenter
-│   └── aula/page.tsx         # /aula    → LevelClassroom
+│   ├── layout.tsx            # Layout raíz: fuentes (Geist + Noto Sans SC) y metadata/SEO
+│   ├── page.tsx              # /              → landing pública (prerenderizada, indexable)
+│   ├── robots.ts, sitemap.ts, manifest.ts, icon.tsx, apple-icon.tsx, opengraph-image.tsx
+│   └── app/                  # App del alumno (noindex) con AppShell
+│       ├── layout.tsx        # AppShell (hidratación + onboarding), instant = false, noindex
+│       ├── page.tsx          # /app          → ProgressDashboard
+│       ├── libro/page.tsx    # /app/libro    → InteractiveTextbook
+│       ├── practica/page.tsx # /app/practica → PracticeHub
+│       ├── repaso/page.tsx   # /app/repaso   → ReviewCenter
+│       └── aula/page.tsx     # /app/aula     → LevelClassroom
 ├── components/
 │   ├── layout/               # AppShell (hidratación + onboarding), Sidebar
 │   ├── onboarding/           # Selección de idioma, nivel y perfil
