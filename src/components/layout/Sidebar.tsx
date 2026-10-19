@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Gauge, GraduationCap, PenTool, Repeat2, RotateCcw, Users } from "lucide-react";
+import { AudioLines, BookOpen, Gauge, GraduationCap, PenTool, Repeat2, RotateCcw, Users } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
-import { APP_HOME, NAV, SITE } from "@/config/site";
+import { APP_HOME, NAV, SITE, type NavIcon } from "@/config/site";
 import { LANGUAGES, levelsFor } from "@/data/levels";
 import { cn } from "@/lib/cn";
 import { useLearningStore } from "@/store/useLearningStore";
@@ -12,7 +12,14 @@ import { useOpenMistakes, useVocabStats } from "@/store/selectors";
 import { Switch } from "@/components/ui/primitives";
 import type { LanguageCode } from "@/types/learning";
 
-const ICONS = { dashboard: Gauge, book: BookOpen, practice: PenTool, review: Repeat2, classroom: Users } as const;
+const ICONS: Record<NavIcon, typeof Gauge> = {
+  dashboard: Gauge,
+  book: BookOpen,
+  phonetics: AudioLines,
+  practice: PenTool,
+  review: Repeat2,
+  classroom: Users,
+};
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -95,7 +102,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
       {/* Navegación */}
       <nav className="flex flex-col gap-0.5">
-        {NAV.map((item) => {
+        {NAV.filter((item) => !item.levels || item.levels.includes(s.level)).map((item) => {
           const Icon = ICONS[item.icon];
           const active = item.href === APP_HOME ? pathname === APP_HOME : pathname.startsWith(item.href);
           const badge = badges[item.href];

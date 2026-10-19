@@ -420,6 +420,82 @@ export interface PronunciationItem {
   ipa?: string;
 }
 
+// ─── Fonética (chino, HSK 1–2) ───────────────────────────────────────────────
+
+/** Ejemplo que se puede escuchar: el audio se genera a partir del hanzi. */
+export interface SoundExample {
+  hanzi: string;
+  /** Pinyin con marcas tonales, tal y como se escribe. */
+  pinyin: string;
+  meaning: string;
+}
+
+export interface PhoneticSound {
+  /** Grafía en pinyin: "zh", "ü", "ian"… */
+  symbol: string;
+  /** Transcripción AFI aproximada, sin corchetes. */
+  ipa?: string;
+  /** Cómo se articula, comparado con el español. */
+  hint: string;
+  example: SoundExample;
+}
+
+export type PhoneticsBlock =
+  | TheoryBlock
+  | {
+      kind: "tones";
+      title: string;
+      intro?: string;
+      tones: {
+        tone: 1 | 2 | 3 | 4 | 5;
+        name: string;
+        /** Contorno en la escala de 5 niveles de Chao (p. ej. [2, 1, 4]); vacío = neutro. */
+        contour: number[];
+        description: string;
+        example: SoundExample;
+      }[];
+    }
+  | {
+      kind: "sounds";
+      title: string;
+      intro?: string;
+      groups: { name: string; note?: string; sounds: PhoneticSound[] }[];
+    }
+  | {
+      kind: "tone-changes";
+      title: string;
+      intro?: string;
+      /** `written`: pinyin del diccionario; `spoken`: cómo se pronuncia en la frase. */
+      rows: { example: SoundExample; written: string; spoken: string; note?: string }[];
+    }
+  | {
+      kind: "minimal-pairs";
+      title: string;
+      intro?: string;
+      pairs: { contrast: string; a: SoundExample; b: SoundExample }[];
+    }
+  | {
+      kind: "tone-grid";
+      title: string;
+      intro?: string;
+      /** Filas = tono de la 1.ª sílaba (1–4); columnas = tono de la 2.ª (1–4 y neutro). */
+      rows: SoundExample[][];
+    };
+
+/** Módulo de fonética: explicación interactiva + práctica con el motor de ejercicios. */
+export interface PhoneticsModule {
+  id: string;
+  level: HSKLevel;
+  order: number;
+  title: string;
+  nativeTitle?: RichText;
+  summary: string;
+  objectives: string[];
+  estimatedMinutes: number;
+  blocks: PhoneticsBlock[];
+  exercises: Exercise[];
+}
+
 // ─── Estado del alumno (persistido) ──────────────────────────────────────────
 
 export interface StudyPreferences {

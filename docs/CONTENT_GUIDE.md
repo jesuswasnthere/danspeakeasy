@@ -43,6 +43,19 @@ zh("我:wǒ 每天:měi-tiān 七:qī 点:diǎn 起床:qǐ-chuáng 。");
    Rotan automáticamente por semana ISO.
 5. Ejecuta `pnpm typecheck` — los tipos validan la forma del contenido.
 
+## Fonética (chino HSK 1–2)
+
+Los módulos viven en `src/data/zh/phonetics.ts` y se registran en `PHONETICS_BY_LEVEL`. Un
+`PhoneticsModule` tiene `blocks` (cualquier `TheoryBlock` más los bloques propios: `tones`,
+`sounds`, `tone-changes`, `minimal-pairs`, `tone-grid`) y `exercises` del motor normal.
+
+- Cada ejemplo (`SoundExample`) se escucha generando el audio a partir de su `hanzi`: usa
+  caracteres o palabras reales, preferiblemente del vocabulario HSK 1–2.
+- Pinyin siempre con marcas tonales. En `tone-changes`, `written` es el pinyin del diccionario y
+  `spoken` lo que se oye (3.º + 3.º, 不, 一, 儿化…).
+- AFI aproximada y sin corchetes en `ipa` (la UI los añade).
+- Los `id` de ejercicio deben ser únicos (`zh-phon-hsk1-m3-e2`): los fallos se guardan por id.
+
 ## Práctica de escritura: nombres de los trazos
 
 La sección **Práctica → Escritura** toma automáticamente los caracteres de las lecciones del

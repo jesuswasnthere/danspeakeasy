@@ -72,7 +72,8 @@ export function TheoryBlocks({ blocks, language }: { blocks: TheoryBlock[]; lang
                           {row.map((cell, c) => (
                             <td
                               key={c}
-                              className={cn("px-4 py-2.5", /[㐀-鿿]/.test(cell) && "font-cjk text-base")}
+                              // Solo celdas sin letras latinas: la fuente CJK descoloca las marcas tonales del pinyin.
+                              className={cn("px-4 py-2.5", /[㐀-鿿]/.test(cell) && "text-base", /[㐀-鿿]/.test(cell) && !/[a-zà-ǜ]/i.test(cell) && "font-cjk")}
                             >
                               {cell}
                             </td>

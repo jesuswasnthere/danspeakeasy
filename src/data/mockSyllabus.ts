@@ -7,12 +7,13 @@
  * En la Fase 2 este archivo se sustituye por una implementación de
  * `ContentRepository` (ver `src/lib/content`) que lea de base de datos / CMS.
  */
-import type { Course, Exercise, Lesson, LevelCode, Unit, VocabularyItem } from "@/types/learning";
+import type { Course, Exercise, HSKLevel, Lesson, LevelCode, Unit, VocabularyItem } from "@/types/learning";
 import { LEVELS } from "./levels";
 import { hsk2Units } from "./zh/hsk2";
 import { zhOtherUnits } from "./zh/otherLevels";
 import { b1Units } from "./en/b1";
 import { enOtherUnits } from "./en/otherLevels";
+import { PHONETICS_BY_LEVEL, phoneticsCourse } from "./zh/phonetics";
 
 const UNITS_BY_LEVEL: Record<LevelCode, Unit[]> = {
   HSK1: zhOtherUnits.HSK1 ?? [],
@@ -64,7 +65,13 @@ const lessonIndex = new Map<string, LessonRef>();
 const exerciseIndex = new Map<string, ExerciseRef>();
 const vocabIndex = new Map<string, VocabRef>();
 
-for (const course of Object.values(SYLLABUS)) {
+// Los módulos de fonética no son parte del libro (no cuentan en su progreso), pero se
+// indexan para que sus errores aparezcan y se puedan re-practicar en Repaso.
+const phoneticsCourses = (Object.keys(PHONETICS_BY_LEVEL) as HSKLevel[])
+  .map(phoneticsCourse)
+  .filter((c): c is Course => !!c);
+
+for (const course of [...Object.values(SYLLABUS), ...phoneticsCourses]) {
   for (const unit of course.units) {
     for (const lesson of unit.lessons) {
       const ref = { lesson, unit, course };

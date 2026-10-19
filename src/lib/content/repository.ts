@@ -4,6 +4,7 @@ import type {
   Course,
   LanguageCode,
   LevelCode,
+  PhoneticsModule,
   PracticeCharacter,
   PronunciationItem,
   ReadingPassage,
@@ -19,6 +20,7 @@ import {
   type VocabRef,
 } from "@/data/mockSyllabus";
 import { classmatesFor, missionSetsFor, seedPostsFor } from "@/data/classroom";
+import { PHONETICS_BY_LEVEL } from "@/data/zh/phonetics";
 import { practiceCharactersFor, pronunciationItemsFor, readingPassagesFor } from "@/data/practice";
 import { isoWeek, weekKey } from "@/lib/dates";
 
@@ -42,6 +44,8 @@ export interface ContentRepository {
   getPracticeCharacters(level: LevelCode): PracticeCharacter[];
   getReadingPassages(language: LanguageCode, level: LevelCode): ReadingPassage[];
   getPronunciationItems(level: LevelCode): PronunciationItem[];
+  /** Módulos de fonética del nivel (solo chino HSK 1–2; vacío en el resto). */
+  getPhoneticsModules(level: LevelCode): PhoneticsModule[];
 }
 
 export const mockContentRepository: ContentRepository = {
@@ -60,4 +64,5 @@ export const mockContentRepository: ContentRepository = {
   getPracticeCharacters: practiceCharactersFor,
   getReadingPassages: readingPassagesFor,
   getPronunciationItems: pronunciationItemsFor,
+  getPhoneticsModules: (level) => PHONETICS_BY_LEVEL[level as keyof typeof PHONETICS_BY_LEVEL] ?? [],
 };

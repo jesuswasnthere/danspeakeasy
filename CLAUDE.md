@@ -46,6 +46,8 @@ pnpm build        # build de producción
 | `src/components/dashboard/` | `ProgressDashboard` |
 | `src/components/classroom/` | `LevelClassroom`, misiones, tablón, `MissionWatcher` |
 | `src/components/review/` | Repaso: tarjetas Leitner + re-práctica de errores |
+| `src/components/phonetics/` | Fonética (chino HSK 1–2): `PhoneticsCenter` (lista de módulos + módulo con Explicación/Práctica), `PhoneticsBlocks` (tonos con contorno, tablas de iniciales/finales, cambios de tono, pares mínimos, tabla de combinaciones; todo suena al pulsar) |
+| `src/data/zh/phonetics.ts` | Módulos de fonética (`PhoneticsModule`): 5 de HSK 1 y 5 de HSK 2 |
 | `src/components/practice/` | Práctica de habilidades: `StrokePractice` (hanzi trazo a trazo con nombre de cada trazo), `ReadingPractice` (lectura con audio, modo sombra), `PronunciationPractice` (micrófono + puntuación) |
 | `src/data/zh/strokes.ts` | Tipos de trazo (横, 竖, 撇…) y orden revisado de los caracteres del temario |
 | `src/data/practice.ts` | Contenido de práctica derivado de las lecciones (caracteres, lecturas, ítems de pronunciación) |
@@ -54,7 +56,7 @@ pnpm build        # build de producción
 | `src/hooks/` | `useSpeech` (TTS, secuencias con resaltado), `useVoiceRecorder` (micrófono, medidor, fin por silencio, transcripción local) |
 | `src/lib/stt.ts` + `src/workers/whisper.worker.ts` | Reconocimiento de voz en el dispositivo con Whisper (transformers.js) |
 | `src/app/page.tsx` | Landing pública `/` (Server Component prerenderizado, JSON-LD `WebSite` + `EducationalOrganization` + `FAQPage`) |
-| `src/app/app/` | App del alumno: `/app` (progreso), `/app/libro`, `/app/practica`, `/app/repaso`, `/app/aula`. Su `layout.tsx` monta `AppShell` |
+| `src/app/app/` | App del alumno: `/app` (progreso), `/app/libro`, `/app/fonetica` (solo chino HSK 1–2), `/app/practica`, `/app/repaso`, `/app/aula`. Su `layout.tsx` monta `AppShell` |
 | `src/app/{robots,sitemap,manifest}.ts`, `icon.tsx`, `apple-icon.tsx`, `opengraph-image.tsx` | SEO técnico (archivos de metadata de Next) |
 | `src/config/site.ts` | `SITE` (nombre, URL canónica desde `NEXT_PUBLIC_SITE_URL`, descripción), `APP_HOME`, `NAV` |
 | `src/config/landing.ts` | FAQ de la landing (misma fuente para la sección visible y el JSON-LD) |
@@ -99,6 +101,13 @@ pnpm build        # build de producción
 - **Cabeceras COOP/COEP** (`next.config.ts`, `credentialless`): dan `crossOriginIsolated` para que
   ONNX/WASM use varios hilos. Cualquier recurso externo nuevo debe admitir CORS o cargarse sin
   credenciales; si algo externo deja de cargar, revisa esto primero.
+
+- **Fonética** (`/app/fonetica`, solo chino HSK 1–2): cada `PhoneticsModule` tiene bloques
+  propios (además de los de teoría) y ejercicios del motor normal. Para la práctica se convierte
+  en `Lesson` (`phoneticsLesson`) y se reutiliza `PracticeSection`: completar un módulo usa
+  `completeLesson`, y sus fallos van a Repaso porque los módulos se indexan en `mockSyllabus`
+  (sin formar parte del curso: no cuentan en el progreso del libro). El enlace del menú solo
+  aparece en esos niveles (`NAV[].levels`). El audio sale del hanzi de cada ejemplo.
 
 ## Cómo añadir contenido
 

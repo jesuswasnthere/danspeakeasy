@@ -15,7 +15,7 @@
 | Ruta | Render | Indexable | Notas |
 | --- | --- | --- | --- |
 | `/` | Estático (Server Component) | Sí | Landing pública. No usa `AppShell` ni localStorage. Metadata, OG y JSON-LD propios. |
-| `/app`, `/app/libro`, `/app/practica`, `/app/repaso`, `/app/aula` | Solo cliente tras hidratar | No (`noindex`, `Disallow: /app/`) | `src/app/app/layout.tsx` monta `AppShell` (hidratación + onboarding) y exporta `instant = false`. |
+| `/app`, `/app/libro`, `/app/fonetica`, `/app/practica`, `/app/repaso`, `/app/aula` | Solo cliente tras hidratar | No (`noindex`, `Disallow: /app/`) | `src/app/app/layout.tsx` monta `AppShell` (hidratación + onboarding) y exporta `instant = false`. |
 | `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest`, `/icon`, `/apple-icon`, `/opengraph-image` | Estático | — | Archivos de metadata de Next (`src/app/*.ts(x)`). |
 | `/api/tts` | Dinámico | No | Proxy de TTS (ver CLAUDE.md). |
 

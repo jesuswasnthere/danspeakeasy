@@ -48,7 +48,8 @@ export function PracticeSection({ lesson, language, onFinish }: { lesson: Lesson
           {correctFirst} de {total} a la primera · puntuación {score}%
         </p>
         <p className="mt-3 text-sm text-muted">
-          +{XP.lessonCompleted} XP · {lesson.vocabulary.length} palabras añadidas a tu banco de repaso.
+          +{XP.lessonCompleted} XP
+          {lesson.vocabulary.length > 0 && ` · ${lesson.vocabulary.length} palabras añadidas a tu banco de repaso`}.
           {score < 100 && " Los fallos están en «Repaso → Errores» para que los practiques."}
         </p>
         <div className="mt-6 flex justify-center gap-2">
