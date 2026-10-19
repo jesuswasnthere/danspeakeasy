@@ -496,6 +496,55 @@ export interface PhoneticsModule {
   exercises: Exercise[];
 }
 
+// ─── Radicales (chino) ───────────────────────────────────────────────────────
+
+export type RadicalCategoryId = "naturaleza" | "animales" | "cuerpo" | "accion" | "hogar";
+
+export interface RadicalCategory {
+  id: RadicalCategoryId;
+  label: string;
+  /** Qué tipo de significados aporta esta familia de radicales. */
+  description: string;
+}
+
+/** Forma alternativa de un radical cuando va dentro de otro carácter (氵 de 水, 亻 de 人…). */
+export interface RadicalVariant {
+  glyph: string;
+  note: string;
+}
+
+/** Radical Kangxi: componente que aporta el campo semántico de un carácter. */
+export interface Radical {
+  id: string;
+  /** Forma independiente: 水, 人, 手… */
+  glyph: string;
+  variants?: RadicalVariant[];
+  /** Nombre coloquial en chino (三点水, 单人旁…), que también se oye. */
+  nickname?: SoundExample;
+  pinyin: string;
+  /** Significado en español. */
+  meaning: string;
+  /** Trazos de la forma independiente. */
+  strokes: number;
+  /** Dónde suele aparecer dentro del carácter. */
+  position: string;
+  category: RadicalCategoryId;
+  /** Frecuente y rentable: conviene aprenderlo primero. */
+  core?: boolean;
+  /** Cómo reconocerlo a simple vista. */
+  recognize: string;
+  /** Qué idea aporta a las palabras de uso diario. */
+  usage: string;
+  examples: SoundExample[];
+}
+
+/** Un mismo componente fonético con radicales distintos: 青 → 清 请 晴 情 睛. */
+export interface PhoneticFamily {
+  component: SoundExample;
+  note: string;
+  members: { radical: string; example: SoundExample; clue: string }[];
+}
+
 // ─── Estado del alumno (persistido) ──────────────────────────────────────────
 
 export interface StudyPreferences {

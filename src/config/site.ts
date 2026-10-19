@@ -25,13 +25,14 @@ export const SITE = {
 /** Prefijo de la aplicación del alumno (no indexable). La landing pública vive en `/`. */
 export const APP_HOME = "/app";
 
-export type NavIcon = "dashboard" | "book" | "phonetics" | "practice" | "review" | "classroom";
+export type NavIcon = "dashboard" | "book" | "phonetics" | "radicals" | "practice" | "review" | "classroom";
 
 /** `levels`: si existe, el enlace solo se muestra en esos niveles. */
 export const NAV: readonly { href: string; label: string; icon: NavIcon; levels?: readonly LevelCode[] }[] = [
   { href: "/app", label: "Progreso", icon: "dashboard" },
   { href: "/app/libro", label: "Libro de clase", icon: "book" },
   { href: "/app/fonetica", label: "Fonética", icon: "phonetics", levels: ["HSK1", "HSK2"] },
+  { href: "/app/radicales", label: "Radicales", icon: "radicals", levels: ["HSK1", "HSK2", "HSK3", "HSK4", "HSK5", "HSK6"] },
   { href: "/app/practica", label: "Práctica", icon: "practice" },
   { href: "/app/repaso", label: "Repaso", icon: "review" },
   { href: "/app/aula", label: "Aula", icon: "classroom" },
