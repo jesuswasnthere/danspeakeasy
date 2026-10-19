@@ -712,3 +712,29 @@ export const PHONETIC_FAMILIES: PhoneticFamily[] = [
     ],
   },
 ];
+
+/**
+ * Componentes de otros radicales del catálogo que se ven dentro de cada ejemplo (por id de radical).
+ * Un carácter es un único punto Unicode, así que no se puede deducir con `includes`: el quiz usa esta
+ * tabla para no ofrecer como distractor un radical que el alumno ve en el carácter (想 → 木 y 目).
+ * Solo se listan los ejemplos que contienen otros radicales del catálogo; el radical propio no se anota.
+ */
+export const RADICAL_VISIBLE_COMPONENTS: Record<string, string[]> = {
+  河: ["kou"], 湖: ["yue", "kou"], 热: ["shou"], 点: ["kou"], 烧: ["tu"], 烤: ["tu"],
+  桌: ["ri"], 椅: ["kou"], 场: ["ri"], 坐: ["ren"], 墙: ["mu", "kou"],
+  钟: ["kou"], 明: ["yue"], 晴: ["yue"], 朋: ["ri"], 岛: ["niao"], 岸: ["chang"], 雷: ["tian"],
+  花: ["ren"], 草: ["ri"], 茶: ["ren", "mu"], 菜: ["mu"], 药: ["mi-silk"],
+  碗: ["mian"], 码: ["ma"], 男: ["li"], 筷: ["xin"], 答: ["ren", "kou"],
+  狗: ["kou"], 猫: ["cao", "tian"], 鸭: ["tian"], 鲨: ["shui"],
+  骑: ["kou"], 驾: ["li", "kou"], 骂: ["kou"], 蜜: ["mian", "xin"], 蛇: ["mian"], 蝴蝶: ["kou", "yue", "mu"],
+  们: ["men"], 休: ["mu"], 吗: ["ma"], 唱: ["ri"], 拿: ["ren", "kou", "shou"],
+  想: ["mu", "mu-eye"], 念: ["ren"], 看: ["shou"], 睡: ["tu"], 睛: ["yue"], 职: ["kou"], 聪: ["xin"],
+  路: ["kou"], 踢: ["ri"], 妈: ["ma"], 妹: ["mu"], 好: ["zi"], 字: ["mian"],
+  脸: ["ren", "kou"], 腿: ["chuo"], 肚: ["tu"], 请: ["yue"], 说: ["kou"], 语: ["kou"],
+  超: ["kou"], 到: ["tu"], 别: ["kou", "li"], 努: ["nv", "li"], 加: ["kou"],
+  安: ["nv"], 客: ["kou"], 室: ["tu"], 店: ["kou"], 床: ["mu"], 应: ["xin"], 座: ["ren", "tu"],
+  间: ["ri"], 问: ["kou"], 闻: ["er"], 轻: ["tu"], 货: ["ren"], 贵: ["kou"],
+  粉: ["dao"], 糖: ["guang", "kou"], 精: ["yue"], 饭: ["chang"], 馆: ["mian"], 裤: ["guang"], 裙: ["kou"],
+  给: ["ren", "kou"], 经: ["tu"], 厕所: ["bei", "dao"], 历: ["li"],
+  院: ["mian"], 阳: ["ri"], 陪: ["kou"], 附: ["ren"], 部: ["kou"], 邮: ["tian"],
+};

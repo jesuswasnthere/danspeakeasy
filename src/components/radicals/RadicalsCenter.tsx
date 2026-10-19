@@ -20,7 +20,7 @@ type Tab = "explorar" | "practicar";
  */
 export function RadicalsCenter() {
   const { language, setLanguage } = useLearningStore(useShallow((s) => ({ language: s.language, setLanguage: s.setLanguage })));
-  const { categories, radicals, families } = content.getRadicals();
+  const { categories, radicals, families, visibleComponents } = content.getRadicals();
   const [tab, setTab] = useState<Tab>("explorar");
 
   if (language !== "zh") {
@@ -72,7 +72,7 @@ export function RadicalsCenter() {
         {tab === "explorar" ? (
           <Explorer categories={categories} radicals={radicals} families={families} onPractice={() => setTab("practicar")} />
         ) : (
-          <RadicalQuiz radicals={radicals} />
+          <RadicalQuiz radicals={radicals} visibleComponents={visibleComponents} />
         )}
       </div>
     </div>
@@ -347,7 +347,7 @@ const ROUND_LENGTH = 10;
 
 type Question =
   | { kind: "radical-of"; example: SoundExample; answer: string; options: Option[]; explanation: string }
-  | { kind: "meaning-of"; glyph: string; hint?: string; answer: string; options: Option[]; explanation: string }
+  | { kind: "meaning-of"; glyph: string; answer: string; options: Option[]; explanation: string }
   | { kind: "family-of"; meaning: string; answer: string; options: Option[]; explanation: string };
 
 interface Option {
@@ -369,23 +369,29 @@ const shuffle = <T,>(items: readonly T[]): T[] => {
 };
 const pick = <T,>(items: readonly T[]): T => items[Math.floor(Math.random() * items.length)];
 
-/** ¿Aparece el radical (o alguna de sus variantes) escrito dentro del carácter? */
-const appearsIn = (r: Radical, hanzi: string) => hanzi.includes(r.glyph) || !!r.variants?.some((v) => hanzi.includes(v.glyph));
+type VisibleComponents = Record<string, string[]>;
+
+/** ¿Se ve el radical dentro del carácter? Un carácter es un solo punto Unicode: se consulta la tabla de componentes. */
+const appearsIn = (r: Radical, hanzi: string, visible: VisibleComponents) => visible[hanzi]?.includes(r.id) ?? false;
+
+/** Radicales que se escriben igual que otro (阝, 月): su significado depende de la posición y no se pregunta en abstracto. */
+const hasTwin = (r: Radical, all: Radical[]) => all.some((o) => o.id !== r.id && shownForm(o) === shownForm(r));
 
 /** Forma con la que se presenta el radical en las opciones (la variante, si la tiene). */
 const shownForm = (r: Radical) => r.variants?.[0]?.glyph ?? r.glyph;
 
-function buildQuestions(radicals: Radical[]): Question[] {
+function buildQuestions(radicals: Radical[], visible: VisibleComponents): Question[] {
   const kinds: Question["kind"][] = ["radical-of", "radical-of", "radical-of", "meaning-of", "family-of"];
   return shuffle(radicals)
     .slice(0, ROUND_LENGTH)
     .map((r, i): Question => {
-      const kind = kinds[i % kinds.length];
+      // 阝 (colina/ciudad) y 月 (luna/carne) son indistinguibles sin contexto: solo se preguntan con un carácter.
+      const kind = hasTwin(r, radicals) && kinds[i % kinds.length] === "meaning-of" ? "radical-of" : kinds[i % kinds.length];
       const others = shuffle(radicals.filter((o) => o.id !== r.id));
 
       if (kind === "radical-of") {
         const example = pick(r.examples);
-        const distractors = others.filter((o) => shownForm(o) !== shownForm(r) && !appearsIn(o, example.hanzi)).slice(0, 3);
+        const distractors = others.filter((o) => shownForm(o) !== shownForm(r) && !appearsIn(o, example.hanzi, visible)).slice(0, 3);
         return {
           kind,
           example,
@@ -398,8 +404,6 @@ function buildQuestions(radicals: Radical[]): Question[] {
         return {
           kind,
           glyph: shownForm(r),
-          // 阝 (colina/ciudad) y 月 (luna/carne) se escriben igual: la posición o el contexto los distingue.
-          hint: radicals.some((o) => o.id !== r.id && shownForm(o) === shownForm(r)) ? r.position : undefined,
           answer: r.id,
           options: shuffle([r, ...others.slice(0, 3)]).map((o) => ({ id: o.id, label: o.meaning })),
           explanation: `${shownForm(r)} (${r.pinyin}) significa «${r.meaning}». ${r.usage}`,
@@ -408,7 +412,7 @@ function buildQuestions(radicals: Radical[]): Question[] {
       // family-of: ¿qué carácter pertenece a la familia de este radical?
       const example = pick(r.examples);
       const wrong = others
-        .filter((o) => !appearsIn(r, o.examples[0].hanzi))
+        .filter((o) => !appearsIn(r, o.examples[0].hanzi, visible))
         .slice(0, 3)
         .map((o) => o.examples[0]);
       return {
@@ -421,7 +425,7 @@ function buildQuestions(radicals: Radical[]): Question[] {
     });
 }
 
-function RadicalQuiz({ radicals }: { radicals: Radical[] }) {
+function RadicalQuiz({ radicals, visibleComponents }: { radicals: Radical[]; visibleComponents: VisibleComponents }) {
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
@@ -429,7 +433,7 @@ function RadicalQuiz({ radicals }: { radicals: Radical[] }) {
   const { speak } = useSpeech();
 
   const start = () => {
-    setQuestions(buildQuestions(radicals));
+    setQuestions(buildQuestions(radicals, visibleComponents));
     setIndex(0);
     setPicked(null);
     setScore(0);
@@ -508,7 +512,6 @@ function RadicalQuiz({ radicals }: { radicals: Radical[] }) {
             <span lang="zh-CN" className="mt-3 block font-cjk text-7xl">
               {q.glyph}
             </span>
-            {q.hint && <p className="mt-1 text-sm text-muted">Pista: {q.hint.toLowerCase()}</p>}
           </div>
         )}
         {q.kind === "family-of" && (
