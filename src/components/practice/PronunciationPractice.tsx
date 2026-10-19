@@ -98,6 +98,79 @@ function LevelMeter({ level }: { level: number }) {
   );
 }
 
+type Recorder = ReturnType<typeof useVoiceRecorder>;
+
+/** Prueba del micrófono: medidor en vivo, selector de dispositivo y diagnóstico. */
+function MicCheck({ rec }: { rec: Recorder }) {
+  const testing = rec.status === "testing";
+  const [open, setOpen] = useState(false);
+  const show = open || testing || (rec.status === "error" && !rec.heardByRecognizer);
+  const verdict =
+    rec.peak > 0.55 ? (
+      <span className="text-success">✓ El micrófono funciona: se oye bien.</span>
+    ) : rec.peak > 0.3 ? (
+      <span className="text-warning">Se oye, pero bajo: acércate al micrófono o sube su volumen en Windows.</span>
+    ) : (
+      <span className="text-danger">
+        No llega sonido de este micrófono. Elige otro en la lista o revisa que no esté silenciado (Windows → Configuración → Sistema → Sonido →
+        Entrada).
+      </span>
+    );
+
+  if (!show) {
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="text-xs text-muted underline hover:text-ink">
+        ¿Problemas con el micrófono? Probar micrófono
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex w-full max-w-md flex-col items-center gap-3 rounded-xl border border-line bg-surface-2 p-4 text-sm">
+      <p className="font-medium">Prueba de micrófono</p>
+      {rec.devices.length > 0 && (
+        <label className="flex w-full flex-col gap-1 text-xs text-muted">
+          Micrófono para grabar
+          <select
+            value={rec.deviceId}
+            onChange={(e) => {
+              rec.setDeviceId(e.target.value);
+              if (testing) rec.stopTest();
+            }}
+            className="rounded-lg border border-line bg-surface px-2 py-1.5 text-sm text-ink"
+          >
+            <option value="">Predeterminado del sistema</option>
+            {rec.devices.map((d, i) => (
+              <option key={d.deviceId || i} value={d.deviceId}>
+                {d.label || `Micrófono ${i + 1}`}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {testing ? (
+        <>
+          <LevelMeter level={rec.level} />
+          <p className="text-xs text-muted">Di algo en voz alta: las barras deben moverse.</p>
+          <Button size="sm" variant="secondary" onClick={rec.stopTest}>
+            Terminar prueba
+          </Button>
+        </>
+      ) : (
+        <Button size="sm" onClick={() => void rec.startTest()}>
+          <Mic size={14} /> Probar micrófono
+        </Button>
+      )}
+      {!testing && rec.peak > 0 && <p className="text-center text-xs">{verdict}</p>}
+      <p className="text-center text-xs text-muted">
+        El reconocimiento de voz usa siempre el micrófono <b>predeterminado del navegador</b>. Si el bueno no es el predeterminado, cámbialo en el
+        icono del candado junto a la dirección (o en <span className="font-mono">chrome://settings/content/microphone</span> /{" "}
+        <span className="font-mono">edge://settings/content/microphone</span>).
+      </p>
+    </div>
+  );
+}
+
 function MicIssueBanner({ issue, recognitionSupported }: { issue: MicIssue; recognitionSupported: boolean }) {
   const [copied, setCopied] = useState(false);
   if (!issue && recognitionSupported) return null;
@@ -257,12 +330,7 @@ function PronunciationCard({
             <MicOff size={14} className="mt-0.5 shrink-0" /> {rec.error}
           </p>
         )}
-        {rec.status === "error" && rec.silent && (
-          <p className="max-w-md text-center text-xs text-muted">
-            El medidor no detectó sonido: puede que el navegador esté usando otro micrófono. Revisa el micrófono seleccionado en los
-            ajustes del sitio (icono junto a la dirección) y en Windows.
-          </p>
-        )}
+        {rec.issue !== "embedded" && <MicCheck rec={rec} />}
       </div>
 
       {/* Resultado */}
