@@ -433,7 +433,7 @@ export const useLearningStore = create<LearningStore>()(
       resetProgress: () => set({ ...initialData }),
     }),
     {
-      name: "lingoaula-learning",
+      name: "danspeakeasy-learning",
       version: 1,
       storage: createJSONStorage(() => localStorage),
       // La hidratación se dispara manualmente en <StoreHydration/> para evitar

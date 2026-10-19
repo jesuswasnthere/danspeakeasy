@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   upstream.search = new URLSearchParams({ ie: "UTF-8", client: "tw-ob", tl: lang, q: text }).toString();
 
   const res = await fetch(upstream, {
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; LingoAula/1.0)" },
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; DanSpeakeasy/1.0)" },
   });
   if (!res.ok || !res.body) return new Response("No se pudo generar el audio", { status: 502 });
 

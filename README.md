@@ -1,4 +1,4 @@
-# LingoAula
+# DanSpeakeasy
 
 Plataforma para aprender **Chino Mandarín (HSK 1–6)** e **Inglés (MCER A1–C2)** con estructura,
 interactividad real, seguimiento pedagógico y comunidad **segmentada por nivel exacto**.

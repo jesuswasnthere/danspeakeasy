@@ -40,7 +40,7 @@ const SILENCE_AFTER_SPEECH_MS = 1300;
 const NO_SPEECH_TIMEOUT_MS = 7000;
 const MAX_RECORDING_MS = 15000;
 
-const DEVICE_KEY = "lingoaula-mic-device";
+const DEVICE_KEY = "danspeakeasy-mic-device";
 
 function readDevicePref(): string {
   try {

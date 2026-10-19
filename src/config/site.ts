@@ -1,5 +1,5 @@
 export const SITE = {
-  name: "LingoAula",
+  name: "DanSpeakeasy",
   tagline: "Chino Mandarín e Inglés, por niveles, con estructura y seguimiento real.",
 } as const;
 

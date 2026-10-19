@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# LingoAula — knowledge del proyecto
+# DanSpeakeasy — knowledge del proyecto
 
 Plataforma web para aprender **Chino Mandarín (HSK 1–6)** e **Inglés (MCER A1–C2)**, con
 contenido y comunidad segmentados estrictamente por nivel. UI en **español**.
