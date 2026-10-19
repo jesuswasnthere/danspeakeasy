@@ -1,3 +1,4 @@
+import { pinyin } from "pinyin-pro";
 import type { LanguageCode } from "@/types/learning";
 
 /**
@@ -66,18 +67,18 @@ export interface PronunciationResult {
 }
 
 /** Subsecuencia común más larga → qué unidades del objetivo se reconocieron. */
-function lcsMatches(a: string[], b: string[]): boolean[] {
+function lcsMatches<A, B>(a: A[], b: B[], eq: (x: A, y: B) => boolean): boolean[] {
   const dp = Array.from({ length: a.length + 1 }, () => new Array<number>(b.length + 1).fill(0));
   for (let i = a.length - 1; i >= 0; i--) {
     for (let j = b.length - 1; j >= 0; j--) {
-      dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+      dp[i][j] = eq(a[i], b[j]) ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
     }
   }
   const matched = new Array<boolean>(a.length).fill(false);
   let i = 0;
   let j = 0;
   while (i < a.length && j < b.length) {
-    if (a[i] === b[j]) {
+    if (eq(a[i], b[j])) {
       matched[i] = true;
       i++;
       j++;
@@ -87,10 +88,25 @@ function lcsMatches(a: string[], b: string[]): boolean[] {
   return matched;
 }
 
+/**
+ * En chino se compara por SONIDO: un carácter cuenta como acertado si es el
+ * mismo o si alguna de sus lecturas coincide con la sílaba esperada (sin tono).
+ * Así no penalizamos homófonos (你/拟) ni caracteres tradicionales (車/车) que
+ * el reconocedor a veces escribe.
+ */
+function zhMatches(expectedChars: string[], heardChars: string[]): boolean[] {
+  const expectedSyl = pinyin(expectedChars.join(""), { toneType: "none", type: "array" });
+  const heardReadings = heardChars.map(
+    (c) => new Set([...pinyin(c, { toneType: "none", type: "array", multiple: true }), c]),
+  );
+  const a = expectedChars.map((c, i) => ({ c, syl: expectedSyl[i] }));
+  return lcsMatches(a, heardReadings, (x, readings) => readings.has(x.c) || readings.has(x.syl));
+}
+
 export function scorePronunciation(language: LanguageCode, expected: string, heard: string): PronunciationResult {
   const a = unitsFor(language, expected);
   const b = unitsFor(language, heard);
-  const matched = lcsMatches(a, b);
+  const matched = language === "zh" ? zhMatches(a, b) : lcsMatches(a, b, (x, y) => x === y);
   const hits = matched.filter(Boolean).length;
   // Coeficiente de Dice: penaliza tanto lo que falta como lo que sobra.
   const score = a.length + b.length ? Math.round((200 * hits) / (a.length + b.length)) : 0;

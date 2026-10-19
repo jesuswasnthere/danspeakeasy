@@ -51,7 +51,8 @@ pnpm build        # build de producción
 | `src/data/practice.ts` | Contenido de práctica derivado de las lecciones (caracteres, lecturas, ítems de pronunciación) |
 | `src/lib/strokes.ts` | Carga de datos de trazos (CDN hanzi-writer-data) + clasificador geométrico para caracteres no anotados |
 | `src/lib/pronunciation.ts` | Comparación objetivo ↔ reconocimiento de voz (LCS + Dice), normalización de números/contracciones |
-| `src/hooks/` | `useSpeech` (TTS, secuencias con resaltado), `useVoiceRecorder` (SpeechRecognition + MediaRecorder) |
+| `src/hooks/` | `useSpeech` (TTS, secuencias con resaltado), `useVoiceRecorder` (micrófono, medidor, fin por silencio, transcripción local) |
+| `src/lib/stt.ts` + `src/workers/whisper.worker.ts` | Reconocimiento de voz en el dispositivo con Whisper (transformers.js) |
 | `src/app/` | Rutas: `/` (progreso), `/libro`, `/practica`, `/repaso`, `/aula` |
 
 ## Decisiones clave (y por qué)
@@ -76,10 +77,17 @@ pnpm build        # build de producción
   si un carácter no está anotado o el número de trazos no cuadra, se estiman con
   `classifyStroke` (~96 % de acierto sobre los anotados) y la UI lo marca «nombres aproximados».
   **Al añadir caracteres nuevos al temario, añade su anotación** en `src/data/zh/strokes.ts`.
-- **Pronunciación**: SpeechRecognition solo existe en Chrome/Edge y necesita internet. Mide
-  inteligibilidad (qué caracteres/palabras se reconocieron), no la precisión tonal: para tonos
-  reales hará falta una API de evaluación de pronunciación en la Fase 2. Siempre se graba la voz
-  (MediaRecorder) para que el alumno se compare con el modelo.
+- **Pronunciación** (`useVoiceRecorder` + `lib/stt.ts` + `workers/whisper.worker.ts`): se graba
+  con el micrófono elegido (MediaRecorder, fin automático por silencio) y se transcribe **en el
+  dispositivo** con Whisper base (transformers.js en un Web Worker). NO se usa la Web Speech API
+  de reconocimiento: escucha solo el micrófono predeterminado y fallaba con micrófonos USB.
+  Con WebGPU el encoder va en GPU (fp16) y el decoder en CPU (q8); sin WebGPU, todo en CPU.
+  El modelo (~95 MB) se descarga una vez de Hugging Face y queda en caché. ~2 s por frase.
+  En chino se compara por **pinyin sin tono** (`pinyin-pro`): homófonos y caracteres tradicionales
+  cuentan como acierto. Mide inteligibilidad, no tonos reales (Fase 2: API de evaluación).
+- **Cabeceras COOP/COEP** (`next.config.ts`, `credentialless`): dan `crossOriginIsolated` para que
+  ONNX/WASM use varios hilos. Cualquier recurso externo nuevo debe admitir CORS o cargarse sin
+  credenciales; si algo externo deja de cargar, revisa esto primero.
 
 ## Cómo añadir contenido
 

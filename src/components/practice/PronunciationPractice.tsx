@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Headphones, Mic, MicOff, Square } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { ArrowLeft, ArrowRight, Headphones, Loader2, Mic, MicOff, Square } from "lucide-react";
+import { modelStore, preloadModel } from "@/lib/stt";
 import { useShallow } from "zustand/react/shallow";
 import { content } from "@/lib/content";
 import { cn } from "@/lib/cn";
 import { bestAlternative, feedbackFor } from "@/lib/pronunciation";
 import { getTone, isRichTokens, syllables, TONE_LABELS, type Tone } from "@/lib/richText";
-import { useVoiceRecorder, type MicIssue } from "@/hooks/useVoiceRecorder";
+import { isEmbeddedBrowser, useVoiceRecorder, type MicIssue } from "@/hooks/useVoiceRecorder";
 import { PRONUNCIATION_PASS, useLearningStore } from "@/store/useLearningStore";
 import type { LanguageCode, PronunciationItem } from "@/types/learning";
 import { RichTextView, ToneColoredTerm } from "@/components/text/RichTextView";
@@ -21,6 +22,11 @@ export function PronunciationPractice() {
     useShallow((s) => ({ language: s.language, level: s.level, stats: s.practice.pronunciation })),
   );
   const all = useMemo(() => content.getPronunciationItems(level), [level]);
+
+  // Empezar a cargar el modelo de voz en cuanto se abre la sección (la 1.ª vez se descarga).
+  useEffect(() => {
+    if (!isEmbeddedBrowser()) preloadModel();
+  }, []);
   const [filter, setFilter] = useState<Filter>("palabra");
   const items = all.filter((i) => i.kind === filter);
   const [index, setIndex] = useState(0);
@@ -104,7 +110,7 @@ type Recorder = ReturnType<typeof useVoiceRecorder>;
 function MicCheck({ rec }: { rec: Recorder }) {
   const testing = rec.status === "testing";
   const [open, setOpen] = useState(false);
-  const show = open || testing || (rec.status === "error" && !rec.heardByRecognizer);
+  const show = open || testing || (rec.status === "error" && rec.peak < 0.45);
   const verdict =
     rec.peak > 0.55 ? (
       <span className="text-success">✓ El micrófono funciona: se oye bien.</span>
@@ -130,7 +136,7 @@ function MicCheck({ rec }: { rec: Recorder }) {
       <p className="font-medium">Prueba de micrófono</p>
       {rec.devices.length > 0 && (
         <label className="flex w-full flex-col gap-1 text-xs text-muted">
-          Micrófono para grabar
+          Micrófono
           <select
             value={rec.deviceId}
             onChange={(e) => {
@@ -163,17 +169,40 @@ function MicCheck({ rec }: { rec: Recorder }) {
       )}
       {!testing && rec.peak > 0 && <p className="text-center text-xs">{verdict}</p>}
       <p className="text-center text-xs text-muted">
-        El reconocimiento de voz usa siempre el micrófono <b>predeterminado del navegador</b>. Si el bueno no es el predeterminado, cámbialo en el
-        icono del candado junto a la dirección (o en <span className="font-mono">chrome://settings/content/microphone</span> /{" "}
-        <span className="font-mono">edge://settings/content/microphone</span>).
+        El micrófono elegido se usa para grabarte y para reconocer tu voz (el reconocimiento se hace en tu propio dispositivo).
       </p>
     </div>
   );
 }
 
-function MicIssueBanner({ issue, recognitionSupported }: { issue: MicIssue; recognitionSupported: boolean }) {
+/** Estado del modelo de voz (Whisper): descarga única con barra de progreso. */
+function ModelStatus() {
+  const model = useSyncExternalStore(modelStore.subscribe, modelStore.getSnapshot, modelStore.getServerSnapshot);
+  if (model.status === "ready" || model.status === "idle") return null;
+  if (model.status === "error") {
+    return (
+      <div className="flex max-w-md flex-col items-center gap-2 text-center text-xs text-danger">
+        <p>No se pudo descargar el modelo de reconocimiento de voz. Revisa tu conexión.</p>
+        <Button size="sm" variant="secondary" onClick={preloadModel}>
+          Reintentar
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div className="flex w-full max-w-xs flex-col gap-1 text-center text-xs text-muted">
+      <ProgressBar value={model.progress / 100} />
+      <span>
+        Descargando el reconocimiento de voz{model.totalMB ? ` (${model.totalMB} MB)` : ""}… {Math.round(model.progress)}% · solo la
+        primera vez
+      </span>
+    </div>
+  );
+}
+
+function MicIssueBanner({ issue }: { issue: MicIssue }) {
   const [copied, setCopied] = useState(false);
-  if (!issue && recognitionSupported) return null;
+  if (!issue) return null;
 
   const copy = () => {
     void navigator.clipboard?.writeText(window.location.href).then(() => setCopied(true));
@@ -185,17 +214,12 @@ function MicIssueBanner({ issue, recognitionSupported }: { issue: MicIssue; reco
         <p className="font-medium">Este navegador integrado no permite usar el micrófono.</p>
         <p>Abre esta página en Chrome o Edge para practicar la pronunciación.</p>
       </>
-    ) : issue === "denied" ? (
+    ) : (
       <>
         <p className="font-medium">El micrófono está bloqueado para esta página.</p>
         <p>
           Pulsa el icono del candado junto a la dirección → <b>Micrófono: Permitir</b> → recarga la página.
         </p>
-      </>
-    ) : (
-      <>
-        <p className="font-medium">Este navegador no tiene reconocimiento de voz.</p>
-        <p>Para obtener puntuación usa Chrome o Edge. Aquí aún puedes grabarte y comparar tu voz con el modelo.</p>
       </>
     );
 
@@ -244,6 +268,8 @@ function PronunciationCard({
 
   const fb = result ? feedbackFor(result.score) : null;
   const listening = rec.status === "listening";
+  const transcribing = rec.status === "transcribing";
+  const model = useSyncExternalStore(modelStore.subscribe, modelStore.getSnapshot, modelStore.getServerSnapshot);
 
   // Pinyin de cada carácter del objetivo, para dar pistas de tono en los fallos.
   const charHints = useMemo(() => {
@@ -300,31 +326,31 @@ function PronunciationCard({
 
       {/* Micrófono */}
       <div className="flex flex-col items-center gap-3">
-        <MicIssueBanner issue={rec.issue} recognitionSupported={rec.recognitionSupported} />
+        <MicIssueBanner issue={rec.issue} />
         <button
           type="button"
           onClick={() => (listening ? rec.stop() : rec.start(language))}
-          disabled={rec.issue === "embedded" || (!rec.recordingSupported && !rec.recognitionSupported)}
+          disabled={rec.issue === "embedded" || !rec.recordingSupported || transcribing}
           className={cn(
             "flex h-20 w-20 items-center justify-center rounded-full text-white shadow-lg transition disabled:opacity-40",
             listening ? "speaking bg-danger" : "bg-accent hover:scale-105",
           )}
           aria-label={listening ? "Detener" : "Hablar"}
         >
-          {listening ? <Square size={28} /> : <Mic size={30} />}
+          {transcribing ? <Loader2 size={28} className="animate-spin" /> : listening ? <Square size={28} /> : <Mic size={30} />}
         </button>
         {listening && <LevelMeter level={rec.level} />}
         <p className="text-sm text-muted">
-          {listening ? (
-            rec.interim ? (
-              <span className="font-cjk text-ink">«{rec.interim}»</span>
-            ) : (
-              "Te escucho… habla ahora (pulsa ■ al terminar)"
-            )
-          ) : (
-            "Pulsa el micrófono y lee en voz alta"
-          )}
+          {listening
+            ? "Te escucho… lee en voz alta (se detiene solo al terminar)"
+            : transcribing
+              ? model.status === "loading"
+                ? "Preparando el reconocimiento de voz…"
+                : "Analizando tu pronunciación…"
+              : "Pulsa el micrófono y lee en voz alta"}
         </p>
+        <ModelStatus />
+
         {rec.error && (
           <p className="flex max-w-md items-start gap-1.5 text-center text-sm text-danger">
             <MicOff size={14} className="mt-0.5 shrink-0" /> {rec.error}
