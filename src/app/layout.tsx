@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Noto_Sans_SC } from "next/font/google";
 import { SITE } from "@/config/site";
-import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -10,16 +9,21 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 const notoSC = Noto_Sans_SC({ variable: "--font-noto-sc", weight: ["400", "500", "700"], preload: false });
 
 /**
- * Fase 1: el estado del alumno vive en localStorage, así que <AppShell> no
- * renderiza las páginas en el servidor (evita parpadeos y desajustes de
- * hidratación). Por eso desactivamos la validación de "instant navigation" de
- * Cache Components. En la Fase 2 (estado en BD + sesión) se puede reactivar.
+ * Layout raíz compartido por la landing pública (`/`, prerenderizada en servidor)
+ * y la app del alumno (`/app/*`, ver app/app/layout.tsx). No monta <AppShell>: la
+ * hidratación desde localStorage solo ocurre dentro de /app.
  */
-export const instant = false;
-
 export const metadata: Metadata = {
-  title: { default: `${SITE.name} · Chino e Inglés por niveles`, template: `%s · ${SITE.name}` },
-  description: SITE.tagline,
+  metadataBase: new URL(SITE.url),
+  title: { default: `${SITE.name} · Aprende idiomas por niveles`, template: `%s · ${SITE.name}` },
+  description: SITE.description,
+  applicationName: SITE.name,
+  openGraph: {
+    type: "website",
+    locale: "es_ES",
+    siteName: SITE.name,
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {
@@ -32,9 +36,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} ${notoSC.variable} h-full antialiased`}>
-      <body className="min-h-full">
-        <AppShell>{children}</AppShell>
-      </body>
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }
