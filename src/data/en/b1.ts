@@ -553,18 +553,525 @@ export const b1Unit1: Unit = {
   ],
 };
 
-export const b1Units: Unit[] = [
-  b1Unit1,
-  {
-    id: "en-b1-u2",
-    language: "en",
-    level: "B1",
-    order: 2,
-    title: "Planes y predicciones",
-    nativeTitle: "Looking ahead",
-    description: "Will, be going to, present continuous para planes y primer condicional.",
-    status: "coming-soon",
-    lessons: [],
-    plannedLessons: ["Will vs going to", "Arrangements: present continuous", "First conditional"],
-  },
-];
+/**
+ * Inglés B1 · Unidad 2 — Looking ahead
+ * Will vs be going to, present continuous para citas y primer condicional.
+ */
+export const b1Unit2: Unit = {
+  id: "en-b1-u2",
+  language: "en",
+  level: "B1",
+  order: 2,
+  title: "Planes y predicciones",
+  nativeTitle: "Looking ahead",
+  description: "Habla de tus planes, decisiones espontáneas, citas en la agenda y consecuencias probables.",
+  status: "available",
+  lessons: [
+    // ─────────────────────────────────────────────────────────────── Lesson 1
+    {
+      id: "en-b1-u2-l1",
+      unitId: "en-b1-u2",
+      order: 1,
+      title: "¿Will o going to?",
+      nativeTitle: "Will vs going to",
+      summary: "Decisiones espontáneas, ofertas y promesas con will; planes e indicios con be going to.",
+      objectives: [
+        "Usar will para decisiones del momento, ofertas y promesas",
+        "Usar be going to para planes ya decididos",
+        "Distinguir predicciones con opinión (will) y con evidencia (going to)",
+        "Usar I think / I don't think + will",
+      ],
+      estimatedMinutes: 30,
+      theory: [
+        {
+          kind: "table",
+          title: "¿Cuál uso?",
+          headers: ["Uso", "Will", "Be going to"],
+          rows: [
+            ["Decisión", "en el momento de hablar", "tomada ANTES de hablar"],
+            ["Predicción", "opinión, creencia", "evidencia que veo ahora"],
+            ["Otros", "ofertas, promesas, peticiones", "intenciones"],
+          ],
+        },
+        {
+          kind: "grammar",
+          title: "Will: decisiones al momento, ofertas y promesas",
+          pattern: "Subject + will ('ll) + base verb · won't + base",
+          explanation:
+            "Si decides algo mientras hablas, usa will. También para ofrecerte (I'll help you), prometer (I won't tell anyone) y predecir según tu opinión, a menudo con I think, probably o I'm sure.",
+          examples: [
+            { text: "The phone's ringing. — I'll get it!", translation: "Suena el teléfono. — ¡Ya lo cojo yo!" },
+            { text: "I promise I won't be late.", translation: "Te prometo que no llegaré tarde." },
+            { text: "I think it'll be a great party.", translation: "Creo que será una fiesta genial." },
+          ],
+        },
+        {
+          kind: "grammar",
+          title: "Be going to: planes y evidencias",
+          pattern: "Subject + am / is / are + going to + base verb",
+          explanation:
+            "Para planes o intenciones que ya tenías antes de hablar, y para predicciones basadas en algo que ves: «Look at those clouds! It's going to rain».",
+          examples: [
+            { text: "I'm going to study medicine next year.", translation: "Voy a estudiar medicina el año que viene." },
+            { text: "Be careful! You're going to fall!", translation: "¡Cuidado! ¡Te vas a caer!" },
+          ],
+        },
+        {
+          kind: "note",
+          variant: "warning",
+          title: "I don't think…, no «I think … won't»",
+          body:
+            "Para una predicción negativa lo natural es negar think: «I don't think she'll come» ✓ (mejor que «I think she won't come»). Y nunca «I will to go» ✗: después de will va el verbo sin to.",
+        },
+      ],
+      vocabulary: [
+        { id: "en-b1-plan", term: "plan", ipa: "/plæn/", meaning: "plan; planear", partOfSpeech: "sustantivo", example: { text: "What are your plans for the summer?", translation: "¿Qué planes tienes para el verano?" } },
+        { id: "en-b1-promise", term: "promise", ipa: "/ˈprɑːmɪs/", meaning: "prometer; promesa", partOfSpeech: "verbo", example: { text: "I promise I'll call you.", translation: "Te prometo que te llamaré." } },
+        { id: "en-b1-probably", term: "probably", ipa: "/ˈprɑːbəbli/", meaning: "probablemente", partOfSpeech: "adverbio", example: { text: "She'll probably be late.", translation: "Probablemente llegará tarde." }, note: "Va después de will y antes de won't: will probably / probably won't." },
+        { id: "en-b1-save-up", term: "save up", ipa: "/seɪv ʌp/", meaning: "ahorrar (para algo)", partOfSpeech: "phrasal verb", example: { text: "I'm going to save up for a new laptop.", translation: "Voy a ahorrar para un portátil nuevo." } },
+        { id: "en-b1-move", term: "move (house)", ipa: "/muːv/", meaning: "mudarse", partOfSpeech: "verbo", example: { text: "We're going to move to Toronto.", translation: "Nos vamos a mudar a Toronto." } },
+        { id: "en-b1-decide", term: "decide", ipa: "/dɪˈsaɪd/", meaning: "decidir", partOfSpeech: "verbo", example: { text: "Have you decided what to do?", translation: "¿Has decidido qué hacer?" } },
+        { id: "en-b1-goal", term: "goal", ipa: "/ɡoʊl/", meaning: "meta, objetivo", partOfSpeech: "sustantivo", example: { text: "My goal is to speak English fluently.", translation: "Mi meta es hablar inglés con fluidez." } },
+        { id: "en-b1-hopefully", term: "hopefully", ipa: "/ˈhoʊpfəli/", meaning: "con suerte, ojalá", partOfSpeech: "adverbio", example: { text: "Hopefully, I'll get the job.", translation: "Ojalá consiga el trabajo." } },
+      ],
+      dialogues: [
+        {
+          id: "en-b1-u2-l1-d1",
+          title: "New Year's resolutions",
+          context: "Dos amigos hablan de sus propósitos de año nuevo en una cafetería.",
+          speakers: [
+            { name: "Chloe", role: "amiga" },
+            { name: "Iván", role: "amigo" },
+          ],
+          lines: [
+            { speaker: "Chloe", text: "So, have you made any resolutions this year?", translation: "¿Y bien? ¿Has hecho algún propósito este año?" },
+            { speaker: "Iván", text: "Yes! I'm going to run a half marathon in October. I've already signed up.", translation: "¡Sí! Voy a correr una media maratón en octubre. Ya me he inscrito." },
+            { speaker: "Chloe", text: "Wow. I don't think I'll ever do that! I'm going to save up for a trip to Japan.", translation: "¡Guau! No creo que yo lo haga nunca. Yo voy a ahorrar para un viaje a Japón." },
+            { speaker: "Iván", text: "That sounds amazing. You'll love it, I'm sure.", translation: "Suena increíble. Te encantará, seguro." },
+            { speaker: "Chloe", text: "Hopefully! Oh no, I've spilled my coffee everywhere.", translation: "¡Ojalá! Ay, no, se me ha caído el café por todas partes." },
+            { speaker: "Iván", text: "Don't worry, I'll get some napkins.", translation: "Tranquila, voy a por servilletas." },
+            { speaker: "Chloe", text: "Thanks! I promise I'll pay for the next coffee.", translation: "¡Gracias! Te prometo que el próximo café lo pago yo." },
+          ],
+        },
+      ],
+      exercises: [
+        {
+          id: "en-b1-u2-l1-e1",
+          type: "multiple-choice",
+          skill: "Will: decisiones espontáneas",
+          instruction: "Elige la respuesta más natural.",
+          question: "«It's cold in here.» — «…»",
+          options: [
+            { id: "a", text: "I'll close the window.", correct: true, feedback: "Correcto: decides en este momento → will." },
+            { id: "b", text: "I'm going to close the window.", correct: false, feedback: "going to implica que ya lo habías decidido antes." },
+            { id: "c", text: "I close the window.", correct: false, feedback: "El presente simple no expresa una decisión al momento." },
+          ],
+          explanation: "Decisión tomada al hablar (sobre todo ofertas) → will.",
+        },
+        {
+          id: "en-b1-u2-l1-e2",
+          type: "fill-blank",
+          skill: "Going to: evidencias",
+          instruction: "Escribe la forma de be going to (tres palabras).",
+          before: "Look at those black clouds! It",
+          after: "rain.",
+          translation: "¡Mira esas nubes negras! Va a llover.",
+          accepted: ["is going to", "'s going to"],
+          hint: "Hay evidencia visible.",
+          explanation: "Predicción basada en lo que ves ahora → be going to.",
+        },
+        {
+          id: "en-b1-u2-l1-e3",
+          type: "sentence-builder",
+          skill: "I don't think + will",
+          instruction: "Ordena las palabras.",
+          prompt: "No creo que ella venga.",
+          blocks: en("I", "don't", "think", "she'll", "come"),
+          solutions: [[0, 1, 2, 3, 4]],
+          explanation: "La negación va en think: I don't think + will.",
+        },
+        {
+          id: "en-b1-u2-l1-e4",
+          type: "fill-blank",
+          skill: "Going to: planes",
+          instruction: "Elige la opción correcta.",
+          before: "We've bought the tickets. We",
+          after: "visit Peru in July.",
+          translation: "Hemos comprado los billetes. Vamos a visitar Perú en julio.",
+          options: [
+            { value: "are going to", feedback: "¡Bien! El plan ya estaba decidido (tienen billetes)." },
+            { value: "will", feedback: "will no encaja con una decisión tomada antes de hablar." },
+            { value: "go to", feedback: "Falta el verbo be: are going to." },
+          ],
+          accepted: ["are going to"],
+          explanation: "Plan previo, con pruebas (billetes) → be going to.",
+        },
+        {
+          id: "en-b1-u2-l1-e5",
+          type: "multiple-choice",
+          skill: "Will: forma",
+          instruction: "¿Qué oración es correcta?",
+          question: "«Te ayudaré con la mudanza.»",
+          options: [
+            { id: "a", text: "I'll help you with the move.", correct: true, feedback: "Correcto: will + verbo base." },
+            { id: "b", text: "I'll to help you with the move.", correct: false, feedback: "Después de will no va to." },
+            { id: "c", text: "I'll helping you with the move.", correct: false, feedback: "will va con el verbo en forma base." },
+          ],
+          explanation: "will / won't + verbo base (sin to, sin -ing).",
+        },
+        {
+          id: "en-b1-u2-l1-e6",
+          type: "multiple-choice",
+          skill: "Will vs going to",
+          instruction: "Escucha y responde.",
+          question: "¿Cuándo decidió el hablante estudiar alemán?",
+          audioText: "I'm going to study German next year. I've already found a school in Berlin.",
+          options: [
+            { id: "a", text: "Antes de hablar: es un plan.", correct: true, feedback: "Exacto: going to + ya ha encontrado la escuela." },
+            { id: "b", text: "En este momento.", correct: false, feedback: "Para eso usaría will." },
+            { id: "c", text: "No lo ha decidido.", correct: false, feedback: "going to indica un plan decidido." },
+          ],
+          explanation: "be going to = intención o plan previo.",
+        },
+      ],
+    },
+
+    // ─────────────────────────────────────────────────────────────── Lesson 2
+    {
+      id: "en-b1-u2-l2",
+      unitId: "en-b1-u2",
+      order: 2,
+      title: "Lo tengo en la agenda",
+      nativeTitle: "Arrangements",
+      summary: "Present continuous para citas fijadas y present simple para horarios oficiales.",
+      objectives: [
+        "Hablar de citas concretas con el present continuous",
+        "Usar el present simple para horarios (trenes, clases, películas)",
+        "Proponer, aceptar y rechazar planes",
+        "Usar preposiciones de tiempo: at, on, in",
+      ],
+      estimatedMinutes: 25,
+      theory: [
+        {
+          kind: "grammar",
+          title: "Present continuous para el futuro",
+          pattern: "Subject + am / is / are + verb-ing + (future time)",
+          explanation:
+            "Para planes ya ACORDADOS con otras personas, con hora y lugar: está en la agenda. Suele llevar una expresión de tiempo futuro para que no se confunda con el presente.",
+          examples: [
+            { text: "I'm meeting Sara at six tomorrow.", translation: "Mañana he quedado con Sara a las seis." },
+            { text: "We're flying to Rome on Friday.", translation: "Volamos a Roma el viernes." },
+            { text: "What are you doing this weekend?", translation: "¿Qué haces este fin de semana?" },
+          ],
+        },
+        {
+          kind: "grammar",
+          title: "Present simple para horarios",
+          pattern: "Subject + verb (s) — timetables, schedules",
+          explanation:
+            "Para eventos con horario fijo que no dependen de ti: transporte, clases, películas, tiendas.",
+          examples: [
+            { text: "The train leaves at 8:15.", translation: "El tren sale a las 8:15." },
+            { text: "The film starts at nine.", translation: "La película empieza a las nueve." },
+          ],
+        },
+        {
+          kind: "table",
+          title: "Tres futuros, tres matices",
+          headers: ["Forma", "Matiz", "Ejemplo"],
+          rows: [
+            ["present continuous", "cita acordada", "I'm having dinner with Leo on Friday."],
+            ["be going to", "intención", "I'm going to cook something special."],
+            ["will", "decisión del momento", "OK, I'll bring dessert!"],
+            ["present simple", "horario oficial", "The restaurant opens at eight."],
+          ],
+        },
+        {
+          kind: "note",
+          variant: "tip",
+          title: "At, on, in",
+          body:
+            "at + hora (at 7 pm, at noon) · on + día o fecha (on Monday, on 5 May) · in + mes, año, parte del día (in June, in the morning). Sin preposición: tomorrow, next week, this Friday.",
+        },
+      ],
+      vocabulary: [
+        { id: "en-b1-arrangement", term: "arrangement", ipa: "/əˈreɪndʒmənt/", meaning: "plan acordado, cita", partOfSpeech: "sustantivo", example: { text: "I've made arrangements to see the doctor.", translation: "He pedido cita con el médico." } },
+        { id: "en-b1-appointment", term: "appointment", ipa: "/əˈpɔɪntmənt/", meaning: "cita (médico, trabajo)", partOfSpeech: "sustantivo", example: { text: "I have a dentist appointment on Tuesday.", translation: "Tengo cita con el dentista el martes." } },
+        { id: "en-b1-free", term: "free", ipa: "/friː/", meaning: "libre, disponible", partOfSpeech: "adjetivo", example: { text: "Are you free on Saturday?", translation: "¿Estás libre el sábado?" } },
+        { id: "en-b1-busy", term: "busy", ipa: "/ˈbɪzi/", meaning: "ocupado", partOfSpeech: "adjetivo", example: { text: "Sorry, I'm busy all week.", translation: "Lo siento, estoy ocupado toda la semana." } },
+        { id: "en-b1-how-about", term: "How about…?", ipa: "/haʊ əˈbaʊt/", meaning: "¿Qué tal si…?", partOfSpeech: "expresión", example: { text: "How about Thursday instead?", translation: "¿Qué tal el jueves en su lugar?" }, note: "Va con sustantivo o -ing: How about going out?" },
+        { id: "en-b1-catch-up", term: "catch up", ipa: "/kætʃ ʌp/", meaning: "ponerse al día", partOfSpeech: "phrasal verb", example: { text: "Let's meet for coffee and catch up.", translation: "Quedemos para un café y nos ponemos al día." } },
+        { id: "en-b1-reschedule", term: "reschedule", ipa: "/ˌriːˈskedʒuːl/", meaning: "cambiar de fecha", partOfSpeech: "verbo", example: { text: "Can we reschedule the meeting?", translation: "¿Podemos cambiar la reunión de fecha?" } },
+        { id: "en-b1-leave", term: "leave", ipa: "/liːv/", meaning: "salir, partir", partOfSpeech: "verbo", example: { text: "The bus leaves at ten.", translation: "El autobús sale a las diez." } },
+      ],
+      dialogues: [
+        {
+          id: "en-b1-u2-l2-d1",
+          title: "Finding a free day",
+          context: "Mia y David intentan encontrar un día para verse.",
+          speakers: [
+            { name: "Mia", role: "amiga" },
+            { name: "David", role: "amigo" },
+          ],
+          lines: [
+            { speaker: "Mia", text: "Hey! Are you free on Friday? We haven't caught up in ages.", translation: "¡Hola! ¿Estás libre el viernes? Hace siglos que no nos ponemos al día." },
+            { speaker: "David", text: "Friday's tricky. I'm having dinner with my in-laws.", translation: "El viernes es complicado. Ceno con mis suegros." },
+            { speaker: "Mia", text: "How about Saturday morning?", translation: "¿Qué tal el sábado por la mañana?" },
+            { speaker: "David", text: "I'm playing tennis at ten, but I'm free after twelve.", translation: "Juego al tenis a las diez, pero estoy libre después de las doce." },
+            { speaker: "Mia", text: "Perfect. There's a new exhibition at the museum. It opens at eleven and closes at six.", translation: "Perfecto. Hay una exposición nueva en el museo. Abre a las once y cierra a las seis." },
+            { speaker: "David", text: "Great, let's go after lunch. I'll book the tickets online.", translation: "Genial, vamos después de comer. Reservo yo las entradas por internet." },
+          ],
+        },
+      ],
+      exercises: [
+        {
+          id: "en-b1-u2-l2-e1",
+          type: "fill-blank",
+          skill: "Present continuous de futuro",
+          instruction: "Escribe el verbo en present continuous (dos palabras).",
+          before: "I can't come tomorrow. I",
+          after: "(meet) a client at ten.",
+          translation: "Mañana no puedo ir. He quedado con un cliente a las diez.",
+          accepted: ["am meeting", "'m meeting"],
+          explanation: "Cita acordada con hora → present continuous.",
+        },
+        {
+          id: "en-b1-u2-l2-e2",
+          type: "multiple-choice",
+          skill: "Present simple: horarios",
+          instruction: "Elige la opción correcta.",
+          question: "«El vuelo sale a las 7:40.»",
+          options: [
+            { id: "a", text: "The flight leaves at 7:40.", correct: true, feedback: "Correcto: horario oficial → present simple." },
+            { id: "b", text: "The flight will leave at 7:40.", correct: false, feedback: "No es incorrecto del todo, pero para horarios lo natural es el present simple." },
+            { id: "c", text: "The flight is going to leave at 7:40.", correct: false, feedback: "going to expresa intención; un vuelo no tiene intenciones." },
+          ],
+          explanation: "Horarios de transporte, cines, tiendas… → present simple.",
+        },
+        {
+          id: "en-b1-u2-l2-e3",
+          type: "fill-blank",
+          skill: "Preposiciones de tiempo",
+          instruction: "Completa con la preposición correcta.",
+          before: "My appointment is",
+          after: "Tuesday morning.",
+          translation: "Mi cita es el martes por la mañana.",
+          options: [
+            { value: "on", feedback: "¡Bien! Día de la semana (aunque lleve morning) → on." },
+            { value: "in", feedback: "in the morning sí, pero con un día concreto se usa on." },
+            { value: "at", feedback: "at se usa con horas." },
+          ],
+          accepted: ["on"],
+          explanation: "on + día: on Tuesday, on Tuesday morning.",
+        },
+        {
+          id: "en-b1-u2-l2-e4",
+          type: "sentence-builder",
+          skill: "Present continuous de futuro",
+          instruction: "Ordena la pregunta.",
+          prompt: "¿Qué haces este fin de semana?",
+          blocks: en("What", "are", "you", "doing", "this", "weekend"),
+          solutions: [[0, 1, 2, 3, 4, 5]],
+          explanation: "Para preguntar por planes concretos: What are you doing + tiempo futuro?",
+        },
+        {
+          id: "en-b1-u2-l2-e5",
+          type: "multiple-choice",
+          skill: "How about…?",
+          instruction: "Elige la propuesta correcta.",
+          question: "«¿Qué tal si vamos al cine?»",
+          options: [
+            { id: "a", text: "How about going to the cinema?", correct: true, feedback: "Correcto: How about + -ing." },
+            { id: "b", text: "How about go to the cinema?", correct: false, feedback: "Después de about el verbo va en -ing." },
+            { id: "c", text: "How about to go to the cinema?", correct: false, feedback: "No se usa to después de about." },
+          ],
+          explanation: "Las preposiciones van seguidas de -ing: How about going…?",
+        },
+        {
+          id: "en-b1-u2-l2-e6",
+          type: "multiple-choice",
+          skill: "Comprensión oral",
+          instruction: "Escucha y responde.",
+          question: "¿Por qué no puede quedar el jueves?",
+          audioText: "Thursday's no good, I'm afraid. I'm taking my mum to the airport in the afternoon.",
+          options: [
+            { id: "a", text: "Lleva a su madre al aeropuerto.", correct: true, feedback: "¡Eso es! Cita ya organizada → present continuous." },
+            { id: "b", text: "Tiene un vuelo.", correct: false, feedback: "Quien viaja es su madre." },
+            { id: "c", text: "Trabaja por la tarde.", correct: false, feedback: "No menciona el trabajo." },
+          ],
+          explanation: "I'm taking… in the afternoon = plan acordado para el futuro.",
+        },
+      ],
+    },
+
+    // ─────────────────────────────────────────────────────────────── Lesson 3
+    {
+      id: "en-b1-u2-l3",
+      unitId: "en-b1-u2",
+      order: 3,
+      title: "Si llueve, nos quedamos",
+      nativeTitle: "First conditional",
+      summary: "Primer condicional, unless, y oraciones de tiempo futuro con when / as soon as.",
+      objectives: [
+        "Formar el primer condicional: if + present, will + verb",
+        "Usar unless (a menos que)",
+        "No usar will después de when, as soon as, before, until",
+        "Advertir y negociar con condicionales",
+      ],
+      estimatedMinutes: 30,
+      theory: [
+        {
+          kind: "grammar",
+          title: "Primer condicional",
+          pattern: "If + present simple, will + base verb",
+          explanation:
+            "Para situaciones reales o probables en el futuro y su consecuencia. La cláusula con if va en PRESENTE aunque hable del futuro. Si if va primero, se pone coma.",
+          examples: [
+            { text: "If it rains, we'll stay at home.", translation: "Si llueve, nos quedaremos en casa." },
+            { text: "You'll miss the bus if you don't hurry.", translation: "Perderás el autobús si no te das prisa." },
+          ],
+        },
+        {
+          kind: "note",
+          variant: "warning",
+          title: "Nunca will después de if",
+          body:
+            "*If it will rain…* ✗ → If it rains… ✓. Lo mismo pasa en español con «si»: decimos «si llueve», no «si lloverá».",
+        },
+        {
+          kind: "grammar",
+          title: "Unless = if … not",
+          pattern: "Unless + present (afirmativo), will + verb",
+          explanation:
+            "Unless significa «a menos que / si no». El verbo que lo sigue es afirmativo, porque unless ya contiene la negación.",
+          examples: [
+            { text: "Unless you study, you won't pass.", translation: "A menos que estudies, no aprobarás." },
+            { text: "I'll be there at eight unless the train is late.", translation: "Estaré allí a las ocho a no ser que el tren llegue tarde." },
+          ],
+        },
+        {
+          kind: "grammar",
+          title: "When / as soon as / before / until + presente",
+          pattern: "Time word + present simple, will + verb",
+          explanation:
+            "Igual que con if, tras estas conjunciones de tiempo se usa presente para hablar del futuro. When indica que algo pasará seguro; if, que es posible.",
+          examples: [
+            { text: "I'll call you as soon as I arrive.", translation: "Te llamaré en cuanto llegue." },
+            { text: "When I finish university, I'll travel.", translation: "Cuando termine la universidad, viajaré." },
+          ],
+        },
+      ],
+      vocabulary: [
+        { id: "en-b1-unless", term: "unless", ipa: "/ənˈles/", meaning: "a menos que, si no", partOfSpeech: "conjunción", example: { text: "We'll go unless it rains.", translation: "Iremos a menos que llueva." } },
+        { id: "en-b1-as-soon-as", term: "as soon as", ipa: "/æz suːn æz/", meaning: "en cuanto, tan pronto como", partOfSpeech: "conjunción", example: { text: "Text me as soon as you land.", translation: "Mándame un mensaje en cuanto aterrices." } },
+        { id: "en-b1-hurry", term: "hurry (up)", ipa: "/ˈhɜːri/", meaning: "darse prisa", partOfSpeech: "verbo", example: { text: "If you don't hurry, we'll be late.", translation: "Si no te das prisa, llegaremos tarde." } },
+        { id: "en-b1-miss-bus", term: "miss (the bus)", ipa: "/mɪs/", meaning: "perder (el autobús)", partOfSpeech: "verbo", example: { text: "I missed the last bus.", translation: "Perdí el último autobús." } },
+        { id: "en-b1-pass-exam", term: "pass (an exam)", ipa: "/pæs/", meaning: "aprobar (un examen)", partOfSpeech: "verbo", example: { text: "If you pass, we'll celebrate.", translation: "Si apruebas, lo celebraremos." }, note: "Falso amigo: «pasar un examen» en el sentido de hacerlo es take an exam." },
+        { id: "en-b1-fail", term: "fail", ipa: "/feɪl/", meaning: "suspender, fallar", partOfSpeech: "verbo", example: { text: "He failed his driving test.", translation: "Suspendió el examen de conducir." } },
+        { id: "en-b1-deal", term: "deal", ipa: "/diːl/", meaning: "trato", partOfSpeech: "sustantivo", example: { text: "OK, it's a deal!", translation: "Vale, ¡trato hecho!" } },
+        { id: "en-b1-until", term: "until", ipa: "/ənˈtɪl/", meaning: "hasta (que)", partOfSpeech: "conjunción", example: { text: "Wait here until I come back.", translation: "Espera aquí hasta que vuelva." } },
+      ],
+      dialogues: [
+        {
+          id: "en-b1-u2-l3-d1",
+          title: "Exam week deal",
+          context: "Una madre negocia con su hijo adolescente durante la semana de exámenes.",
+          speakers: [
+            { name: "Helen", role: "madre" },
+            { name: "Josh", role: "hijo" },
+          ],
+          lines: [
+            { speaker: "Josh", text: "Mum, can I go to Leo's party on Saturday?", translation: "Mamá, ¿puedo ir a la fiesta de Leo el sábado?" },
+            { speaker: "Helen", text: "Your maths exam is on Monday. If you go, you won't have time to study.", translation: "Tu examen de mates es el lunes. Si vas, no tendrás tiempo de estudiar." },
+            { speaker: "Josh", text: "I'll study all day on Friday and Sunday. I promise!", translation: "Estudiaré todo el viernes y el domingo. ¡Te lo prometo!" },
+            { speaker: "Helen", text: "OK, but you can't go unless you finish the practice tests first.", translation: "Vale, pero no puedes ir a menos que termines primero los exámenes de práctica." },
+            { speaker: "Josh", text: "Deal! And if I pass, will you buy me the new headphones?", translation: "¡Trato hecho! ¿Y si apruebo, me compras los cascos nuevos?" },
+            { speaker: "Helen", text: "We'll see. Text me as soon as you get there, and I'll pick you up at midnight.", translation: "Ya veremos. Mándame un mensaje en cuanto llegues y te recojo a medianoche." },
+          ],
+        },
+      ],
+      exercises: [
+        {
+          id: "en-b1-u2-l3-e1",
+          type: "fill-blank",
+          skill: "Primer condicional",
+          instruction: "Escribe la forma correcta del verbo.",
+          before: "If it",
+          after: "(rain) tomorrow, we'll cancel the picnic.",
+          translation: "Si llueve mañana, cancelaremos el picnic.",
+          accepted: ["rains"],
+          hint: "Tras if, presente simple.",
+          explanation: "if + present simple (rains), will + verbo. Nunca «if it will rain».",
+        },
+        {
+          id: "en-b1-u2-l3-e2",
+          type: "multiple-choice",
+          skill: "Unless",
+          instruction: "¿Qué oración significa lo mismo?",
+          question: "«If you don't leave now, you'll miss the train.»",
+          options: [
+            { id: "a", text: "Unless you leave now, you'll miss the train.", correct: true, feedback: "Correcto: unless = if … not." },
+            { id: "b", text: "Unless you don't leave now, you'll miss the train.", correct: false, feedback: "Doble negación: unless ya incluye el not." },
+            { id: "c", text: "Unless you will leave now, you'll miss the train.", correct: false, feedback: "Tras unless va presente, no will." },
+          ],
+          explanation: "unless + verbo afirmativo en presente.",
+        },
+        {
+          id: "en-b1-u2-l3-e3",
+          type: "sentence-builder",
+          skill: "As soon as",
+          instruction: "Ordena las palabras. Sobra una.",
+          prompt: "Te llamaré en cuanto llegue.",
+          blocks: en("I'll", "call", "you", "as", "soon", "as", "I", "arrive", "will"),
+          solutions: [[0, 1, 2, 3, 4, 5, 6, 7]],
+          explanation: "Tras as soon as va presente (I arrive); will sobra.",
+        },
+        {
+          id: "en-b1-u2-l3-e4",
+          type: "fill-blank",
+          skill: "When + presente",
+          instruction: "Elige la opción correcta.",
+          before: "When I",
+          after: "my degree, I'll look for a job abroad.",
+          translation: "Cuando termine la carrera, buscaré trabajo en el extranjero.",
+          options: [
+            { value: "finish", feedback: "¡Bien! Tras when, presente aunque hable del futuro." },
+            { value: "will finish", feedback: "No se usa will tras when en oraciones de tiempo." },
+            { value: "finished", feedback: "El past simple no encaja: es un hecho futuro." },
+          ],
+          accepted: ["finish"],
+          explanation: "when / as soon as / before / until + present simple → futuro.",
+        },
+        {
+          id: "en-b1-u2-l3-e5",
+          type: "multiple-choice",
+          skill: "Falsos amigos",
+          instruction: "Elige el significado correcto.",
+          question: "«I hope I pass the exam.»",
+          options: [
+            { id: "a", text: "Espero aprobar el examen.", correct: true, feedback: "Exacto: pass an exam = aprobar." },
+            { id: "b", text: "Espero hacer el examen.", correct: false, feedback: "Hacer un examen = take an exam." },
+            { id: "c", text: "Espero saltarme el examen.", correct: false, feedback: "Eso sería skip the exam." },
+          ],
+          explanation: "pass = aprobar · fail = suspender · take = hacer/presentarse.",
+        },
+        {
+          id: "en-b1-u2-l3-e6",
+          type: "multiple-choice",
+          skill: "Comprensión oral",
+          instruction: "Escucha y responde.",
+          question: "¿Qué pasará si el hablante consigue el trabajo?",
+          audioText: "If I get the job, I'll move to Manchester, but I won't sell my flat until I find a new one.",
+          options: [
+            { id: "a", text: "Se mudará a Mánchester.", correct: true, feedback: "¡Correcto! If I get the job, I'll move…" },
+            { id: "b", text: "Venderá su piso inmediatamente.", correct: false, feedback: "Dice que no lo venderá hasta encontrar otro." },
+            { id: "c", text: "Rechazará la oferta.", correct: false, feedback: "No se menciona." },
+          ],
+          explanation: "until + presente (I find) = hasta que encuentre.",
+        },
+      ],
+    },
+  ],
+};
+
+export const b1Units: Unit[] = [b1Unit1, b1Unit2];

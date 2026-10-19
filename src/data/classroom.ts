@@ -6,6 +6,7 @@ import type {
   LevelCode,
   WeeklyMission,
 } from "@/types/learning";
+import { B1_PLANS_SET, EN_CLASSMATES, EN_MISSION_SETS, EN_POSTS } from "./en/classroom";
 
 // ─── Retos semanales ──────────────────────────────────────────────────────────
 
@@ -475,7 +476,8 @@ function genericSet(language: LanguageCode, level: LevelCode): MissionSet {
 
 export const MISSION_SETS: Partial<Record<LevelCode, MissionSet[]>> = {
   HSK2: hsk2Sets,
-  B1: b1Sets,
+  B1: [...b1Sets, B1_PLANS_SET],
+  ...EN_MISSION_SETS,
 };
 
 export function missionSetsFor(language: LanguageCode, level: LevelCode): MissionSet[] {
@@ -498,7 +500,7 @@ const CLASSMATES: Classmate[] = [
   { id: "c-mateo", name: "Mateo V.", avatar: "⚽", country: "🇻🇪", level: "B1", streak: 26 },
 ];
 
-interface MockPost extends Omit<ClassroomPost, "createdAt" | "replies"> {
+export interface MockPost extends Omit<ClassroomPost, "createdAt" | "replies"> {
   hoursAgo: number;
   replies: (Omit<ClassroomPost["replies"][number], "createdAt"> & { hoursAgo: number })[];
 }
@@ -661,13 +663,13 @@ function genericPosts(language: LanguageCode, level: LevelCode): MockPost[] {
 }
 
 export function classmatesFor(level: LevelCode): Classmate[] {
-  const list = CLASSMATES.filter((c) => c.level === level);
+  const list = [...CLASSMATES, ...EN_CLASSMATES].filter((c) => c.level === level);
   return list.length ? list : genericClassmates(level);
 }
 
 /** Posts mock del nivel, con fechas relativas a `now`. */
 export function seedPostsFor(language: LanguageCode, level: LevelCode, now: Date): ClassroomPost[] {
-  const posts = MOCK_POSTS.filter((p) => p.level === level);
+  const posts = [...MOCK_POSTS, ...EN_POSTS].filter((p) => p.level === level);
   const source = posts.length ? posts : genericPosts(language, level);
   const at = (h: number) => new Date(now.getTime() - h * 3_600_000).toISOString();
   return source.map(({ hoursAgo, replies, ...p }) => ({

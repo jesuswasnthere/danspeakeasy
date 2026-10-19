@@ -29,8 +29,9 @@ interactividad real, seguimiento pedagógico y comunidad **segmentada por nivel 
 - **Controles globales** — mostrar/ocultar pinyin, traducción, colores de tono y velocidad de audio
   (Web Speech API `zh-CN` / `en-US`).
 
-Contenido completo: **HSK 2 · Unidad 1** (3 lecciones) e **Inglés B1 · Unidad 1** (3 lecciones).
-HSK 1 y A2 tienen una lección base; el resto de niveles muestra unidades planificadas.
+Contenido completo: **HSK 2 · Unidad 1** (3 lecciones) e **Inglés A1–C2** (una unidad de 3
+lecciones por nivel; B1 tiene dos), con misiones semanales y aula propias en cada nivel de inglés.
+HSK 1 tiene una lección base; HSK 3–6 muestran unidades planificadas.
 
 ## Empezar
 

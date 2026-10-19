@@ -35,7 +35,7 @@ pnpm build        # build de producción
 | Ruta | Qué hay |
 | --- | --- |
 | `src/types/learning.ts` | Modelos de dominio (niveles, unidades, lecciones, ejercicios, aula, estado del alumno) |
-| `src/data/` | Contenido mock: `levels.ts`, `zh/hsk2.ts` (unidad completa), `en/b1.ts` (unidad completa), `*/otherLevels.ts`, `classroom.ts` (misiones + tablón), `mockSyllabus.ts` (agregador + índices) |
+| `src/data/` | Contenido mock: `levels.ts`, `zh/hsk2.ts` (unidad completa), `zh/otherLevels.ts`, `en/{a1,a2,b1,b2,c1,c2}.ts` (una unidad completa por nivel; B1 tiene dos), `classroom.ts` (misiones + tablón; los de inglés salvo B1 en `en/classroom.ts`), `mockSyllabus.ts` (agregador + índices) |
 | `src/lib/content/` | `ContentRepository`: **única puerta de acceso al contenido** desde la UI. Fase 2 = otra implementación |
 | `src/lib/exercises/evaluate.ts` | Evaluación pura de ejercicios + interfaz `FeedbackProvider` (punto de enganche del LLM) |
 | `src/lib/richText.ts` | `zh()` / `en()` para escribir tokens con pinyin, tonos, utilidades CJK |

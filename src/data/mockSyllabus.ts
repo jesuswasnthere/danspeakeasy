@@ -1,8 +1,8 @@
 /**
  * Syllabus mock completo: une las unidades de cada nivel en cursos.
  *
- * Contenido profundo: HSK 2 (unidad 1, 3 lecciones) e Inglés B1 (unidad 1, 3 lecciones).
- * Estructura base: HSK 1 y A2 (una lección), resto de niveles con unidades planificadas.
+ * Contenido profundo: HSK 2 (unidad 1, 3 lecciones) e Inglés A1–C2 (una unidad de 3
+ * lecciones por nivel; B1 tiene dos). HSK 1 tiene una lección base y HSK 3–6 unidades planificadas.
  *
  * En la Fase 2 este archivo se sustituye por una implementación de
  * `ContentRepository` (ver `src/lib/content`) que lea de base de datos / CMS.
@@ -11,8 +11,12 @@ import type { Course, Exercise, HSKLevel, Lesson, LevelCode, Unit, VocabularyIte
 import { LEVELS } from "./levels";
 import { hsk2Units } from "./zh/hsk2";
 import { zhOtherUnits } from "./zh/otherLevels";
+import { a1Units } from "./en/a1";
+import { a2Units } from "./en/a2";
 import { b1Units } from "./en/b1";
-import { enOtherUnits } from "./en/otherLevels";
+import { b2Units } from "./en/b2";
+import { c1Units } from "./en/c1";
+import { c2Units } from "./en/c2";
 import { PHONETICS_BY_LEVEL, phoneticsCourse } from "./zh/phonetics";
 
 const UNITS_BY_LEVEL: Record<LevelCode, Unit[]> = {
@@ -22,12 +26,12 @@ const UNITS_BY_LEVEL: Record<LevelCode, Unit[]> = {
   HSK4: zhOtherUnits.HSK4 ?? [],
   HSK5: zhOtherUnits.HSK5 ?? [],
   HSK6: zhOtherUnits.HSK6 ?? [],
-  A1: enOtherUnits.A1 ?? [],
-  A2: enOtherUnits.A2 ?? [],
+  A1: a1Units,
+  A2: a2Units,
   B1: b1Units,
-  B2: enOtherUnits.B2 ?? [],
-  C1: enOtherUnits.C1 ?? [],
-  C2: enOtherUnits.C2 ?? [],
+  B2: b2Units,
+  C1: c1Units,
+  C2: c2Units,
 };
 
 export const SYLLABUS: Record<LevelCode, Course> = Object.fromEntries(
